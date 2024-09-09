@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Specialization(models.Model):
     title = models.CharField(max_length=255)
@@ -9,13 +9,13 @@ class Specialization(models.Model):
 class Doctor(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    specialization = models.ForeignKey(Specialization, on_delete=models.CASCADE)
+    specialization = models.ForeignKey(Specialization, on_delete=models.PROTECT)
     phone = models.CharField(max_length=15)
     clinic_address = models.TextField()
     license_number = models.CharField(max_length=11)
     biography = models.TextField()
     is_active = models.BooleanField()
-    visit_cost = models.DecimalField(max_digits=8)
+    visit_cost = models.DecimalField(decimal_places=2, max_digits=8)
 
 
 class AvailableTime(models.Model):
@@ -28,8 +28,7 @@ class AvailableTime(models.Model):
 
 class Comment(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='comments',blank=False,null=False)
-    name = models.CharField(max_length=80,blank=False,null=False)
-    email = models.EmailField()
+    patient = models.ForeignKey("Patient",on_delete=models.CASCADE)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -37,15 +36,17 @@ class Comment(models.Model):
     is_visited = models.BooleanField(default=False)
 
 class Rating(models.Model):
-    first_name = models.CharField()
-    last_name = models.CharField()
     patient = models.ForeignKey("Patient", on_delete=models.CASCADE, blank=False,null=False)
-    score = models.PositiveIntegerField()
-
+    score = models.PositiveIntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(5)
+        ]
+    )
 
 
 class Patient(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    balance = models.DecimalField(max_digits=10)
+    balance = models.DecimalField(max_digits=10, decimal_places=2)
     phone = models.CharField(max_length=15)
     reserved_time = models.ForeignKey(AvailableTime, on_delete=models.CASCADE)
