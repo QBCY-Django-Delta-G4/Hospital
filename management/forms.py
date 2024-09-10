@@ -1,5 +1,5 @@
 from django import forms
-from .models import Patient
+from .models import Patient,AvailableTime
 from django.contrib.auth.models import User
 
 class PatientForm(forms.ModelForm):
@@ -29,3 +29,12 @@ class PatientForm(forms.ModelForm):
         if commit:
             patient.save()
         return patient
+
+
+
+class AvailableTimeForm(forms.ModelForm):
+    class Meta:
+        model = AvailableTime
+        exclude = ["patient",]
+
+
