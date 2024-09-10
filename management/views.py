@@ -12,7 +12,7 @@ def create_doctor(request):
         else:
             forms.save()
             messages.success(request, 'ثبت شد')
-            return redirect('createdoctor')
+            return redirect('viewdoctor')
     else:
         forms = DoctorForm()
 
@@ -35,7 +35,7 @@ def create_specialize(request):
 
         forms.save()
         messages.success(request, 'ثبت شد')
-        return redirect('createdoctor')
+        return redirect('viewdoctor')
 
     else:
         forms = SpecializationForm()
@@ -54,7 +54,7 @@ def create_patient(request):
     return render(request, 'add_patient.html', {'form': form})
 
 
-def Create_AvailableTime(request):
+def create_availableTime(request):
     if request.method == "POST":
         form = AvailableTimeForm(request.POST)
 
@@ -114,6 +114,16 @@ def delete_doctor(request, id):
     doctor.save()
     return redirect("viewdoctor")
 
+def edit_doctor(request, id):
+    doctor = Doctor.objects.get(pk=id)
+    if request.method == "POST":
+        form = DoctorForm(request.POST, instance=doctor)
+        if form.is_valid():
+            form.save()
+            return redirect('viewdoctor')
+    else:
+        form = DoctorForm(instance=doctor)
+    return render(request, 'edit_doctor.html', {'forms': form})
 
 
 def detail_doctor(request, id):

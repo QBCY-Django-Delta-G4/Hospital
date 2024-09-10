@@ -50,7 +50,7 @@ table tr:hover {
                         <td>{{ doctor.last_name }}</td>
                         <td>{{ doctor.specializations.title }}</td>
                         <td>
-                            <a href="#">Edit</a>
+                            <a href="{% url 'edit_doctor' doctor.pk %}">Edit</a>
                             <a href="{% url 'doctor_timelist' doctor.pk %}">Times</a>
                             <a href="{% url 'delete_doctor' doctor.pk %}">Delete</a>
                         </td>

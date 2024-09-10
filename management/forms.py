@@ -30,8 +30,8 @@ class DoctorForm(forms.ModelForm):
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
         phone_regex = r'^09[1-9]{9}+$'
-        if not re.match(phone_regex, phone):
-            raise forms.ValidationError('لطفا شماره تماس را به درستی وارد نمایید.')
+        # if not re.match(phone_regex, phone):
+        #     raise forms.ValidationError('لطفا شماره تماس را به درستی وارد نمایید.')
 
         return phone
 
