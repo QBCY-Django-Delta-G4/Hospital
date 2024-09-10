@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+
 class Specialization(models.Model):
     title = models.CharField(max_length=255)
     def __str__(self) -> str:
@@ -10,7 +11,7 @@ class Specialization(models.Model):
 class Doctor(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    specialization = models.ForeignKey(Specialization, on_delete=models.PROTECT)
+    specializations = models.ForeignKey(Specialization, on_delete=models.PROTECT)
     phone = models.CharField(max_length=15)
     clinic_address = models.TextField()
     license_number = models.CharField(max_length=11)

@@ -1,6 +1,46 @@
 from django import forms
-from .models import Patient,AvailableTime
+from .models import *
 from django.contrib.auth.models import User
+import re
+
+
+class DoctorForm(forms.ModelForm):
+    class Meta:
+        model = Doctor
+        fields = ['first_name', 'last_name',
+                  'specializations', 'phone',
+                  'clinic_address', 'visit_cost', 'is_active']
+
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get('first_name')
+        first_name_regex = r'^[\u0600-\u06FF\s]+$'
+        if not re.match(first_name_regex, first_name):
+            raise forms.ValidationError('نام را با کاراکتر حروف بنویسید')
+
+        return first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get('last_name')
+        last_name_regex = r'^[\u0600-\u06FF\s]+$'
+        if not re.match(last_name_regex, last_name):
+            raise forms.ValidationError('نام خانوادگی را با کاراکتر حروف بنویسید.')
+
+        return last_name
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        phone_regex = r'^09[1-9]{9}+$'
+        if not re.match(phone_regex, phone):
+            raise forms.ValidationError('لطفا شماره تماس را به درستی وارد نمایید.')
+
+        return phone
+
+
+class SpecializationForm(forms.ModelForm):
+    class Meta:
+        model = Specialization
+        fields = ['title']
+
 
 class PatientForm(forms.ModelForm):
     username = forms.CharField(max_length=150)

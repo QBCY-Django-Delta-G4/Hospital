@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+    /* استایل برای جدول */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #fff;
+}
+
+table th,
+table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.container {
+    width: 90%;
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+    </style>
+    <div class="container">
+        <h1>لیست پزشکان</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>نام</th>
+                    <th>نام خانوادگی</th>
+                    <th> زمان بندی</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doctor in doctors %}
+                    <tr>
+                        <td>{{ doctor.first_name }}</td>
+                        <td>{{ doctor.last_name }}</td>
+                    <td>{{ doctor.availabletime_set }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2">هیچ دکتری یافت نشد.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

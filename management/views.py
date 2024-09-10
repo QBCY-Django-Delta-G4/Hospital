@@ -1,7 +1,48 @@
-from django.shortcuts import render,redirect
-from .forms import PatientForm,AvailableTimeForm
+from django.shortcuts import render, redirect
+from .forms import *
+from .models import *
+from django.contrib import messages
 
-# Create your views here.
+
+def create_doctor(request):
+    if request.method == 'POST':
+        forms = DoctorForm(request.POST)
+        if not forms.is_valid():
+            return render(request, 'create_doctor.html', {'forms': forms})
+        else:
+            forms.save()
+            messages.success(request, 'ثبت شد')
+            return redirect('createdoctor')
+    else:
+        forms = DoctorForm()
+
+    return render(request, 'create_doctor.html', {'forms': forms})
+
+
+def view_doctor(request):
+    doctors = Doctor.objects.all()
+    context = {
+        'doctors': doctors
+    }
+    return render(request, 'view_doctor.html', context)
+
+
+def create_specialize(request):
+    if request.method == 'POST':
+        forms = SpecializationForm(request.POST)
+        if not forms.is_valid():
+            return render(request, 'create_specialize.html', {'forms': forms})
+
+        forms.save()
+        messages.success(request, 'ثبت شد')
+        return redirect('createdoctor')
+
+    else:
+        forms = SpecializationForm()
+
+    return render(request, 'create_specialize.html', {'forms': forms})
+
+
 def create_patient(request):
     if request.method == "POST":
         form = PatientForm(request.POST)
@@ -11,7 +52,6 @@ def create_patient(request):
     else:
         form = PatientForm()
     return render(request, 'add_patient.html', {'form': form})
-
 
 
 def Create_AvailableTime(request):
@@ -25,6 +65,4 @@ def Create_AvailableTime(request):
     else:
         form = AvailableTimeForm()
 
-    return render(request,"Create_AvailableTime.html",{"form":form})
-
-
+    return render(request, "Create_AvailableTime.html", {"form": form})
