@@ -20,7 +20,7 @@ def create_doctor(request):
 
 
 def view_doctor(request):
-    doctors = Doctor.objects.all()
+    doctors = Doctor.objects.filter(is_active=True)
     context = {
         'doctors': doctors
     }
@@ -101,3 +101,21 @@ def create_rating(request):
         form = RatingForm()
 
     return render(request, "create_rating.html", {"form": form})
+
+
+def doctor_timelist(request, pk):
+    pass
+
+
+
+def delete_doctor(request, id):
+    doctor = Doctor.objects.get(id=id)
+    doctor.is_active = False
+    doctor.save()
+    return redirect("viewdoctor")
+
+
+
+def detail_doctor(request, id):
+    pass
+

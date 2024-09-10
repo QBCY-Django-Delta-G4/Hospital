@@ -9,7 +9,7 @@ class DoctorForm(forms.ModelForm):
         model = Doctor
         fields = ['first_name', 'last_name',
                   'specializations', 'phone',
-                  'clinic_address', 'visit_cost', 'is_active']
+                  'clinic_address', 'visit_cost',]
 
     def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')

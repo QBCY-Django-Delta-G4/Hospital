@@ -39,15 +39,21 @@ table tr:hover {
                 <tr>
                     <th>نام</th>
                     <th>نام خانوادگی</th>
-                    <th> زمان بندی</th>
+                    <th>تخصص</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for doctor in doctors %}
                     <tr>
-                        <td>{{ doctor.first_name }}</td>
+                        <td><a href="{% url 'detail_doctor' doctor.pk %}">{{ doctor.first_name }}</a></td>
                         <td>{{ doctor.last_name }}</td>
-                    <td>{{ doctor.availabletime_set }}</td>
+                        <td>{{ doctor.specializations.title }}</td>
+                        <td>
+                            <a href="#">Edit</a>
+                            <a href="{% url 'doctor_timelist' doctor.pk %}">Times</a>
+                            <a href="{% url 'delete_doctor' doctor.pk %}">Delete</a>
+                        </td>
                     </tr>
                 {% empty %}
                     <tr>

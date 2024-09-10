@@ -16,7 +16,7 @@ class Doctor(models.Model):
     clinic_address = models.TextField()
     license_number = models.CharField(max_length=11)
     biography = models.TextField()
-    is_active = models.BooleanField()
+    is_active = models.BooleanField(default=True)
     visit_cost = models.DecimalField(decimal_places=2, max_digits=8)
     def __str__(self) -> str:
         return self.first_name
