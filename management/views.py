@@ -20,7 +20,7 @@ def create_doctor(request):
 
 
 def view_doctor(request):
-    doctors = Doctor.objects.filter(is_active=True)
+    doctors = Doctor.objects.filter(is_deleted=True)
     context = {
         'doctors': doctors
     }
@@ -107,12 +107,12 @@ def doctor_timelist(request, pk):
     pass
 
 
-
 def delete_doctor(request, id):
     doctor = Doctor.objects.get(id=id)
-    doctor.is_active = False
+    doctor.is_deleted = False
     doctor.save()
     return redirect("viewdoctor")
+
 
 def edit_doctor(request, id):
     doctor = Doctor.objects.get(pk=id)
@@ -127,5 +127,9 @@ def edit_doctor(request, id):
 
 
 def detail_doctor(request, id):
-    pass
+    doctors = Doctor.objects.get(id=id)
+    context = {
+        'doctors': doctors
+    }
+    return render(request, 'detail_doctor.html', context)
 

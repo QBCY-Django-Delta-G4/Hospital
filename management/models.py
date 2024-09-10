@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
+from django.conf import settings
 
 
 class Specialization(models.Model):
@@ -11,13 +13,16 @@ class Specialization(models.Model):
 class Doctor(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    specializations = models.ForeignKey(Specialization, on_delete=models.PROTECT)
+    specializations = models.ForeignKey(Specialization, on_delete=models.PROTECT, verbose_name='تخصص')
     phone = models.CharField(max_length=15)
-    clinic_address = models.TextField()
+    clinic_address = models.TextField(verbose_name='آدرس مطب')
     license_number = models.CharField(max_length=11)
-    biography = models.TextField()
+    biography = models.TextField(verbose_name='درباره دکتر')
     is_active = models.BooleanField(default=True)
     visit_cost = models.DecimalField(decimal_places=2, max_digits=8)
+    is_deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+    deleted_at = models.DateTimeField(null=True, blank=True, verbose_name='زمان حذف')
+
     def __str__(self) -> str:
         return self.first_name
 
