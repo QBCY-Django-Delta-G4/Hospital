@@ -31,7 +31,7 @@ class AvailableTime(models.Model):
 
 class Comment(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='comments', blank=False, null=False)
-    patient = models.ForeignKey("Patient",on_delete=models.CASCADE)
+    patient = models.ForeignKey("Patient",on_delete=models.CASCADE,blank=True,null=True)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -39,7 +39,7 @@ class Comment(models.Model):
     is_visited = models.BooleanField(default=False)
 
 class Rating(models.Model):
-    patient = models.ForeignKey("Patient", on_delete=models.CASCADE, blank=False, null=False)
+    patient = models.ForeignKey("Patient", on_delete=models.CASCADE, blank=True, null=True)
     score = models.PositiveIntegerField(
         validators=[
             MinValueValidator(1),

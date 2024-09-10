@@ -66,3 +66,38 @@ def Create_AvailableTime(request):
         form = AvailableTimeForm()
 
     return render(request, "Create_AvailableTime.html", {"form": form})
+
+
+
+
+def create_comment(request):
+    if request.method == 'POST':
+        forms = CommentForm(request.POST)
+        
+        if not forms.is_valid():
+            return render(request, 'create_commnet.html', {'forms': forms})
+
+        forms.save()
+        messages.success(request, 'ثبت شد')
+        return redirect('create_rating')
+
+    else:
+        forms = CommentForm()
+
+    return render(request, 'create_comment.html', {'forms': forms})
+
+
+
+def create_rating(request):
+    if request.method == "POST":
+        form = RatingForm(request.POST) 
+
+        if form.is_valid():
+            messages.success(request, 'ثبت شد')
+            form.save()
+            return redirect("create_rating")
+
+    else:
+        form = RatingForm()
+
+    return render(request, "create_rating.html", {"form": form})
