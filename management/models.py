@@ -21,7 +21,6 @@ class Doctor(models.Model):
     is_active = models.BooleanField(default=True)
     visit_cost = models.DecimalField(decimal_places=2, max_digits=8)
     is_deleted = models.BooleanField(default=False, verbose_name='حذف شده')
-    deleted_at = models.DateTimeField(null=True, blank=True, verbose_name='زمان حذف')
 
     def __str__(self) -> str:
         return self.first_name
