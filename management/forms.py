@@ -81,7 +81,6 @@ class PatientForm(forms.ModelForm):
         return patient
 
 
-
 class AvailableTimeForm(forms.ModelForm):
     class Meta:
         model = AvailableTime
@@ -92,6 +91,7 @@ class RatingForm(forms.ModelForm):
     class Meta:
         model = Rating
         fields = ["score"]
+
 
 class CommentForm(forms.ModelForm):
     class Meta:
