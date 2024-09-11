@@ -9,7 +9,10 @@
 </head>
 <body dir="rtl">
     <header>
+    <a href="{% url 'home' %}">
         <h1>سیستم نوبت دهی آنلاین</h1>
+    </a>
+        {% if user.is_authenticated %}
         <nav>
             <ul>
                 <li><a href="{% url 'viewdoctor' %}">نمایش دکترها</a></li>
@@ -17,6 +20,13 @@
                 <li><a href="{% url 'createspecialize' %}">تخصص جدید</a></li>
             </ul>
         </nav>
+            <a href="{% url 'logout' %}">خروج</a>
+        {% endif %}
+    {% if not user.is_authenticated %}
+        <a href="{% url 'login' %}">ورود</a>
+        <a href="{% url 'create_patient' %}">ثبت نام</a>
+    {% endif %}
+
     </header>
 
     <main>

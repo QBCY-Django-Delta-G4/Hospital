@@ -105,7 +105,7 @@ def create_comment(request):
         forms = CommentForm(request.POST)
         
         if not forms.is_valid():
-            return render(request, 'create_commnet.html', {'forms': forms})
+            return render(request, 'detail_doctor.html', {'forms': forms})
 
         forms.save()
         messages.success(request, 'ثبت شد')
@@ -170,33 +170,36 @@ def availabletime_doctor(request:HttpRequest,id):
     doctor = get_object_or_404(Doctor,id=id)
     availabletimes =  AvailableTime.objects.filter(doctor=doctor)
 
-    print(availabletimes)
-
-    context = {"doctor":doctor,"availabletimes":availabletimes}
+    context = {
+        "doctor":doctor,
+        "availabletimes":availabletimes
+    }
     return render(request,"availabletime_doctor.html",context=context)
 
 
 
 
-def patient_login(request:HttpRequest):
-    if request.user.is_authenticated:
-        return redirect('viewdoctor')
+def patient_login(request):
     if request.method == 'POST':
         form = LoginAsPatient(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('viewdoctor')
+            return redirect('createdoctor')
     else:
         form = LoginAsPatient()
 
     return render(request, 'login.html', {'form': form})
 
-@login_required(login_url='login')
 def home(request):
-    return redirect("login")
+    doctors = Doctor.objects.all()
+    context = {
+        'doctors':doctors
+    }
+    return render(request, 'home.html', context)
 
+@login_required(login_url='login')
 def patient_logout(request):
     logout(request)
-    return redirect("login")
+    return redirect('home')
 

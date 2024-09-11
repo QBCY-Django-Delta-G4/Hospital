@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+<div class="doctor-container">
+    {% for doctor in doctors %}
+        <a href="{% url 'detail_doctor' doctor.id %}" class="doctor-card">
+            <img alt="{{ doctor.first_name }}" class="doctor-image" height="50" src="/media/{{ doctor.image }}"
+                 width="50">
+            <span class="doctor-name">{{ doctor.first_name }} {{ doctor.last_name }}</span>
+        </a>
+    {% endfor %}
+</div>
+{% endblock %}
