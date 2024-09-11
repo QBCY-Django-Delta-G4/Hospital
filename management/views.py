@@ -50,7 +50,7 @@ def create_patient(request):
         form = PatientForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('patient_login')
+            return redirect('login')
     else:
         form = PatientForm()
     return render(request, 'add_patient.html', {'form': form})
@@ -146,5 +146,5 @@ def patient_login(request):
     else:
         form = LoginAsPatient()
 
-    return render(request, 'patient_login.html', {'form': form})
+    return render(request, 'login.html', {'form': form})
 

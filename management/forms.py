@@ -81,6 +81,7 @@ class PatientForm(forms.ModelForm):
         return patient
 
 
+
 class AvailableTimeForm(forms.ModelForm):
     class Meta:
         model = AvailableTime
