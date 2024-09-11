@@ -3,9 +3,10 @@ from .forms import *
 from .models import *
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 
 
-
+@login_required(login_url='login')
 def create_doctor(request):
     if request.method == 'POST':
         forms = DoctorForm(request.POST)
@@ -20,7 +21,7 @@ def create_doctor(request):
 
     return render(request, 'create_doctor.html', {'forms': forms})
 
-
+@login_required(login_url='login')
 def view_doctor(request):
     doctors = Doctor.objects.filter(is_deleted=False)
     context = {
@@ -28,7 +29,7 @@ def view_doctor(request):
     }
     return render(request, 'view_doctor.html', context)
 
-
+@login_required(login_url='login')
 def create_specialize(request):
     if request.method == 'POST':
         forms = SpecializationForm(request.POST)
@@ -44,7 +45,6 @@ def create_specialize(request):
 
     return render(request, 'create_specialize.html', {'forms': forms})
 
-
 def create_patient(request):
     if request.method == "POST":
         form = PatientForm(request.POST)
@@ -55,7 +55,7 @@ def create_patient(request):
         form = PatientForm()
     return render(request, 'add_patient.html', {'form': form})
 
-
+@login_required(login_url='login')
 def create_availableTime(request):
     if request.method == "POST":
         form = AvailableTimeForm(request.POST)
@@ -70,8 +70,7 @@ def create_availableTime(request):
     return render(request, "Create_AvailableTime.html", {"form": form})
 
 
-
-
+@login_required(login_url='login')
 def create_comment(request):
     if request.method == 'POST':
         forms = CommentForm(request.POST)
@@ -89,7 +88,7 @@ def create_comment(request):
     return render(request, 'create_comment.html', {'forms': forms})
 
 
-
+@login_required(login_url='login')
 def create_rating(request):
     if request.method == "POST":
         form = RatingForm(request.POST) 
@@ -104,18 +103,18 @@ def create_rating(request):
 
     return render(request, "create_rating.html", {"form": form})
 
-
+@login_required(login_url='login')
 def doctor_timelist(request, pk):
     pass
 
-
+@login_required(login_url='login')
 def delete_doctor(request, id):
     doctor = Doctor.objects.get(id=id)
     doctor.is_deleted = True
     doctor.save()
     return redirect("viewdoctor")
 
-
+@login_required(login_url='login')
 def edit_doctor(request, id):
     doctor = Doctor.objects.get(pk=id)
     if request.method == "POST":
@@ -127,14 +126,13 @@ def edit_doctor(request, id):
         form = DoctorForm(instance=doctor)
     return render(request, 'edit_doctor.html', {'forms': form})
 
-
+@login_required(login_url='login')
 def detail_doctor(request, id):
     doctors = Doctor.objects.get(id=id)
     context = {
         'doctors': doctors
     }
     return render(request, 'detail_doctor.html', context)
-
 
 def patient_login(request):
     if request.method == 'POST':
@@ -148,3 +146,6 @@ def patient_login(request):
 
     return render(request, 'login.html', {'form': form})
 
+@login_required(login_url='login')
+def home(request):
+    pass
