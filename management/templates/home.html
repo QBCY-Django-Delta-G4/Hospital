@@ -2,12 +2,19 @@
 {% load static %}
 {% block content %}
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+    <form method="GET" action="">
+        <input type="text" name="q" placeholder="پیدا کردن دکتر بر اساس تخصص یا نام دکتر" value="{{ search_query }}">
+        <button type="submit">جست و جو</button>
+    </form>
+    <br>
 <div class="doctor-container">
+    
     {% for doctor in doctors %}
         <a href="{% url 'detail_doctor' doctor.id %}" class="doctor-card">
             <img alt="{{ doctor.first_name }}" class="doctor-image" height="50" src="/media/{{ doctor.image }}"
                  width="50">
-            <span class="doctor-name">{{ doctor.first_name }} {{ doctor.last_name }}</span>
+            <span class="doctor-name">{{ doctor.first_name }} {{ doctor.last_name }} - {{doctor.specializations.title}}</span>
         </a>
     {% endfor %}
 </div>

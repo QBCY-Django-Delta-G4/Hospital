@@ -2,6 +2,8 @@ from django.http import HttpRequest
 from django.shortcuts import get_object_or_404, render, redirect
 from .forms import *
 from .models import *
+from django.db.models import Q, Value
+from django.db.models.functions import Concat
 from django.contrib import messages
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
@@ -15,7 +17,6 @@ def create_doctor(request):
             return render(request, 'create_doctor.html', {'forms': forms})
         else:
             forms.save()
-            messages.success(request, 'ثبت شد')
             return redirect('viewdoctor')
     else:
         forms = DoctorForm()
@@ -193,9 +194,23 @@ def patient_login(request):
 
 def home(request):
     doctors = Doctor.objects.all()
+    search_query = request.GET.get('q')
+
+    if search_query:
+
+        doctors = doctors.annotate(
+            full_name=Concat('first_name', Value(' '), 'last_name')
+        ).filter(
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query) |
+            Q(specializations__title__icontains=search_query) |
+            Q(full_name__icontains=search_query)
+        )
+
     context = {
         'doctors':doctors
     }
+
     return render(request, 'home.html', context)
 
 @login_required(login_url='login')

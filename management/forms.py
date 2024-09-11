@@ -19,7 +19,7 @@ class DoctorForm(forms.ModelForm):
     last_name = forms.CharField(label='نام خانوادگی')
     phone = forms.CharField(label='شماره تماس')
     license_number = forms.CharField(label='شماره نظام پزشکی')
-    visit_cost = forms.DecimalField(label='نوبت دهی')
+    visit_cost = forms.DecimalField(label='هزینه ویزیت')
 
     def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')
@@ -39,7 +39,7 @@ class DoctorForm(forms.ModelForm):
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
-        phone_regex = r'^09[0-9]{9}+$'
+        phone_regex = r'^09[0-9]{9}$'
         if not re.match(phone_regex, phone):
             raise forms.ValidationError('لطفا شماره تماس را به درستی وارد نمایید.')
 
