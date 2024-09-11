@@ -12,7 +12,7 @@ class DoctorForm(forms.ModelForm):
         fields = ['first_name', 'last_name',
                   'specializations', 'phone',
                   'clinic_address', 'license_number',
-                  'biography','visit_cost',
+                  'biography','visit_cost','is_active',
                  ]
 
     first_name = forms.CharField(label='نام دکتر')
@@ -85,7 +85,9 @@ class PatientForm(forms.ModelForm):
 class AvailableTimeForm(forms.ModelForm):
     class Meta:
         model = AvailableTime
-        exclude = ["patient",]
+        exclude = ["patient","doctor"]
+
+
 
 
 class RatingForm(forms.ModelForm):

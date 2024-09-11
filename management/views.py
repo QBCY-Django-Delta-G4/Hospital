@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.http import HttpRequest
+from django.shortcuts import get_object_or_404, render, redirect
 from .forms import *
 from .models import *
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 
 
@@ -46,6 +47,8 @@ def create_specialize(request):
     return render(request, 'create_specialize.html', {'forms': forms})
 
 def create_patient(request):
+    if request.user.is_authenticated:
+        return redirect('viewdoctor')
     if request.method == "POST":
         form = PatientForm(request.POST)
         if form.is_valid():
@@ -55,19 +58,45 @@ def create_patient(request):
         form = PatientForm()
     return render(request, 'add_patient.html', {'form': form})
 
+
+
 @login_required(login_url='login')
-def create_availableTime(request):
+def create_availabletime(request:HttpRequest,id):
+    doctor = get_object_or_404(Doctor, id=id)
     if request.method == "POST":
         form = AvailableTimeForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return redirect("/create_availableTime/")
-
+            fr = form.save(commit=False)
+            fr.doctor = doctor
+            fr.save()
+            return redirect("availabletime_doctor", id=id)
     else:
         form = AvailableTimeForm()
 
     return render(request, "Create_AvailableTime.html", {"form": form})
+
+
+@login_required(login_url='login')
+def edit_availabletime(request:HttpRequest,id):
+    availabletime = AvailableTime.objects.get(pk=id)
+    if request.method == "POST":
+        form = AvailableTimeForm(request.POST, instance=availabletime)
+        if form.is_valid():
+            form.save()
+            return redirect("availabletime_doctor", id=availabletime.doctor.id)
+    else:
+        form = AvailableTimeForm(instance=availabletime)
+    return render(request, "Create_AvailableTime.html", {"form": form})
+
+
+@login_required(login_url='login')
+def delete_availabletime(request:HttpRequest,id):
+    availabletime = AvailableTime.objects.get(pk=id)
+    availabletime.delete()
+    return redirect("availabletime_doctor", id=availabletime.doctor.id)
+
+
 
 
 @login_required(login_url='login')
@@ -134,13 +163,30 @@ def detail_doctor(request, id):
     }
     return render(request, 'detail_doctor.html', context)
 
-def patient_login(request):
+
+
+@login_required(login_url='login')
+def availabletime_doctor(request:HttpRequest,id):
+    doctor = get_object_or_404(Doctor,id=id)
+    availabletimes =  AvailableTime.objects.filter(doctor=doctor)
+
+    print(availabletimes)
+
+    context = {"doctor":doctor,"availabletimes":availabletimes}
+    return render(request,"availabletime_doctor.html",context=context)
+
+
+
+
+def patient_login(request:HttpRequest):
+    if request.user.is_authenticated:
+        return redirect('viewdoctor')
     if request.method == 'POST':
         form = LoginAsPatient(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('createdoctor')
+            return redirect('viewdoctor')
     else:
         form = LoginAsPatient()
 
@@ -148,4 +194,9 @@ def patient_login(request):
 
 @login_required(login_url='login')
 def home(request):
-    pass
+    return redirect("login")
+
+def patient_logout(request):
+    logout(request)
+    return redirect("login")
+

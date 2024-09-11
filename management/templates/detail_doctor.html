@@ -32,7 +32,7 @@
 
         <div class="visit-cost">
             <p><strong>هزینه ویزیت:</strong> {{ doctors.visit_cost }} ریال</p>
-            <button>نوبت دهی</button>
+            <a href="{% url 'availabletime_doctor' doctors.pk %}">نوبت دهی</a>
         </div>
     </div>
 </body>

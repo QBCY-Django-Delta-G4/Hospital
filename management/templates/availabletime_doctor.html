@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/availabletime_doctor.css' %}">
+    {% endblock %}
+
+
+    <div class="container">
+        <h1>زمان‌های موجود دکتر {{ doctor.first_name }} {{ doctor.last_name }}</h1>
+        <a href="{% url "create_availabletime" doctor.pk %}" class="button">اضافه کردن زمان موجود</a>
+
+        {% if availabletimes %}
+            {% for time in availabletimes %}
+                <div class="available-time">
+                    <div class="day">{{ time.date }}</div>
+                    <div class="time">{{ time.start_time }} - {{ time.end_time }}</div>
+                    <div class="patient-name">
+                        {% if time.patient.user %}
+                            {{ time.patient.user.last_name }} {{ time.patient.user.last_name }}
+                        {% else %}
+                            بدون بیمار
+                        {% endif %}
+                    </div>
+                    <div class="actions">
+                        <a href="{% url "edit_availabletime" time.id %}" class="button">ویرایش</a>
+                        <a href="{% url "delete_availabletime" time.id %}" class="button">حذف</a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>زمانی برای نمایش وجود ندارد.</p>
+        {% endif %}
+    </div>
+    
+{% endblock %}
