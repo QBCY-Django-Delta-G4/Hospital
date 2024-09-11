@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from .forms import *
 from .models import *
 from django.contrib import messages
+from django.contrib.auth import authenticate, login
+
 
 
 def create_doctor(request):
@@ -48,7 +50,7 @@ def create_patient(request):
         form = PatientForm(request.POST)
         if form.is_valid():
             form.save()
-            # return redirect('Done')
+            return redirect('patient_login')
     else:
         form = PatientForm()
     return render(request, 'add_patient.html', {'form': form})
@@ -132,4 +134,17 @@ def detail_doctor(request, id):
         'doctors': doctors
     }
     return render(request, 'detail_doctor.html', context)
+
+
+def patient_login(request):
+    if request.method == 'POST':
+        form = LoginAsPatient(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('createdoctor')
+    else:
+        form = LoginAsPatient()
+
+    return render(request, 'patient_login.html', {'form': form})
 

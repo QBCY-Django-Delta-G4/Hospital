@@ -1,6 +1,8 @@
 from django import forms
 from .models import *
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
+
 import re
 
 
@@ -96,3 +98,8 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ['doctor', 'description', 'is_visited']
 
+
+
+class LoginAsPatient(AuthenticationForm):
+    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Username'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
