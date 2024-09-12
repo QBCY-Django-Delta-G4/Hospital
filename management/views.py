@@ -339,10 +339,9 @@ def patient_reserved_times(request):
     context = {"availabletimes":availabletimes,}
     return render(request,"patient_reserved_times.html",context=context)
 
-
+@login_required(login_url='login')
 def patient_profile(request):
     patient, created = Patient.objects.get_or_create(user=request.user)
-    
     return render(request, 'patient_profile.html', {'patient': patient})
 
 
