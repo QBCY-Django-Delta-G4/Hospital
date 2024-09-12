@@ -42,15 +42,82 @@
     margin: 0; /* حذف حاشیه پیش‌فرض پاراگراف برای تراز بهتر */
 }
 
-.visit-cost button {
+.visit-cost a {
     padding: 8px 16px;
     background-color: #3498db;
     color: white;
+    text-decoration: none; /* حذف خط زیر لینک */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block; /* نمایش به شکل دکمه */
+    transition: background-color 0.3s ease; /* افکت تغییر رنگ هنگام هاور */
+}
+
+.visit-cost a:hover {
+    background-color: #2980b9; /* تغییر رنگ هنگام هاور */
+}
+    /* استایل برای بخش نظرات */
+.comments-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.comments-section h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.comment {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.comment p {
+    margin: 0;
+    color: #555;
+}
+
+.comment .comment-author {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.comment .comment-date {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 5px;
+}
+
+.comment .comment-text {
+    margin-top: 10px;
+}
+
+.new-comment-form {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.new-comment-form input[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
-.visit-cost button:hover {
-    background-color: #2980b9;
+.new-comment-form input[type="submit"]:hover {
+    background-color: #0056b3;
 }

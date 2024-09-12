@@ -1,14 +1,82 @@
-<html>
-<head>
-    <title>New Patient</title>
-</head>
-<body>
-    <h2>Add a New Patient</h2>
-    <form method="post">
-        {% csrf_token %} 
-        {{ form.as_p }} 
-        <button type="submit">Save</button>
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
 
+{% block title %}ساخت کاربر{% endblock %}
+
+{% block content %}
+    <style>
+        /* تنظیمات اصلی فرم */
+        html, body {
+            height: 100%; /* تنظیم ارتفاع کامل صفحه */
+            margin: 0;
+            padding: 0;
+        }
+
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* ارتفاع صفحه به اندازه کامل */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #ffffff; /* تغییر به سفید برای خوانایی بیشتر */
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* سایه قوی‌تر برای عمق بیشتر */
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 28px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-container input,
+        .form-container select,
+        .form-container textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .submit-btn {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+
+    <div class="wrapper">
+        <div class="container">
+            <h2 class="page-title">کاربر جدید</h2>
+            <div class="form-container">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="submit-btn">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

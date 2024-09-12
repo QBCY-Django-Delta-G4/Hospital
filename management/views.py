@@ -111,23 +111,6 @@ def delete_availabletime(request:HttpRequest,id):
 
 
 
-@login_required(login_url='login')
-@permission_required('management.add_comment', raise_exception=True)
-def create_comment(request):
-    if request.method == 'POST':
-        forms = CommentForm(request.POST)
-        
-        if not forms.is_valid():
-            return render(request, 'detail_doctor.html', {'forms': forms})
-
-        forms.save()
-        messages.success(request, 'ثبت شد')
-        return redirect('create_rating')
-
-    else:
-        forms = CommentForm()
-
-    return render(request, 'create_comment.html', {'forms': forms})
 
 
 @login_required(login_url='login')
@@ -172,11 +155,54 @@ def edit_doctor(request, id):
 
 @login_required(login_url='login')
 def detail_doctor(request, id):
-    doctors = Doctor.objects.get(id=id)
+    doctor = get_object_or_404(Doctor, id=id)
+    comments = doctor.comments.filter(active=True)
+
+    new_comment = None
+
+    if request.method == 'POST':
+        comment_form = CommentForm(data=request.POST)
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.doctor = doctor
+            try:
+                patient = Patient.objects.get(user=request.user)
+                new_comment.patient = patient
+                new_comment.save()
+                messages.success(request, 'نظر شما با موفقیت ثبت شد.')
+                return redirect('detail_doctor', id=id)  # به صفحه دکتر هدایت می‌شود تا نظر جدید نمایش داده شود
+            except Patient.DoesNotExist:
+                messages.error(request, 'بیمار مربوطه یافت نشد.')
+    else:
+        comment_form = CommentForm()
+
     context = {
-        'doctors': doctors
+        'doctor': doctor,
+        'comments': comments,
+        'new_comment': new_comment,
+        'comment_form': comment_form
     }
+
     return render(request, 'detail_doctor.html', context)
+
+
+# @login_required(login_url='login')
+# @permission_required('management.add_comment', raise_exception=True)
+# def create_comment(request):
+#     if request.method == 'POST':
+#         forms = CommentForm(request.POST)
+#
+#         if not forms.is_valid():
+#             return render(request, 'detail_doctor.html', {'forms': forms})
+#
+#         forms.save()
+#         messages.success(request, 'ثبت شد')
+#         return redirect('create_rating')
+#
+#     else:
+#         forms = CommentForm()
+#
+#     return render(request, 'create_comment.html', {'forms': forms})
 
 
 @login_required(login_url='login')

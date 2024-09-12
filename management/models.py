@@ -49,6 +49,10 @@ class Comment(models.Model):
     active = models.BooleanField(default=True)
     is_visited = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"{self.description}"
+
+
 class Rating(models.Model):
     patient = models.ForeignKey("Patient", on_delete=models.CASCADE, blank=True, null=True)
     score = models.PositiveIntegerField(
@@ -64,3 +68,5 @@ class Patient(models.Model):
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     phone = models.CharField(max_length=15)
 
+    def __str__(self):
+        return f"{self.user.username}"

@@ -99,7 +99,13 @@ class RatingForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['doctor', 'description', 'is_visited']
+        fields = ['description']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'نظر خود را اینجا بنویسید...'})
+        }
+        labels = {
+            'description': 'نظر شما'
+        }
 
 
 

@@ -24,17 +24,46 @@
 
         <div class="doctor-status">
             {% if doctors.is_active %}
-                {% comment %} <p class="status active">دکتر در حال حاضر در مطب هستند</p> {% endcomment %}
-                <p class="status active">دکتر در حال حاضر پذیرش دارد</p>
+                <p class="status active">دکتر در حال حاضر در مطب هستند</p>
             {% else %}
-                <p class="status not-active">دکتر در حال حاضر پذیرش ندارد</p>
+                <p class="status not-active">دکتر در حال حاضر در مطب نیستند</p>
             {% endif %}
         </div>
 
-        <div class="visit-cost">
+       <div class="visit-cost">
             <p><strong>هزینه ویزیت:</strong> {{ doctors.visit_cost }} ریال</p>
-            <a href="{% url 'availabletime_doctor' doctors.pk %}">نوبت دهی</a>
+            <a href="{% url 'createdoctor' %}">نوبت دهی</a>
         </div>
+
+<div class="comments-section">
+    {% with comments.count as total_comments %}
+        <h2>
+          تعداد نظرات: {{ total_comments }}
+        </h2>
+    {% endwith %}
+
+    {% for comment in comments %}
+        <div class="comment">
+            <p class="comment-author">نظر توسط {{ comment.patient.user.username }}</p>
+            <div class="comment-text">{{ comment.description|linebreaks }}</div>
+            <p class="comment-date">در تاریخ {{ comment.created_at }}</p>
+        </div>
+    {% empty %}
+        <p>هیچ نظری ثبت نشده است</p>
+    {% endfor %}
+
+    <div class="new-comment-form">
+        {% if user.is_authenticated %}
+            <h2>نظر خود را بنویسید</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <input type="submit" value="ثبت نظر" class="submit-btn">
+            </form>
+        {% else %}
+            <p>برای ثبت نظر باید وارد حساب کاربری خود شوید.</p>
+        {% endif %}
     </div>
+</div>
 </body>
 {% endblock %}
