@@ -1,4 +1,4 @@
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from .forms import *
 from .models import *
@@ -316,6 +316,15 @@ def patient_reserved_times(request):
 
     context = {"availabletimes":availabletimes,}
     return render(request,"patient_reserved_times.html",context=context)
+
+
+def patient_profile(request):
+    patient, created = Patient.objects.get_or_create(user=request.user)
+    
+    return render(request, 'patient_profile.html', {'patient': patient})
+
+
+
 
 
 
