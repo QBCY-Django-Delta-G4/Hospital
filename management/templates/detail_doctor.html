@@ -7,23 +7,23 @@
     {% endblock %}
     <div class="doctor-profile">
         <div class="header">
-            <h1 class="doctor-name">{{ doctors.first_name }} {{ doctors.last_name }}</h1>
-            <p class="specialization"><strong>تخصص:</strong> {{ doctors.specializations }}</p>
+            <h1 class="doctor-name">{{ doctor.first_name }} {{ doctor.last_name }}</h1>
+            <p class="specialization"><strong>تخصص:</strong> {{ doctor.specializations }}</p>
         </div>
 
         <div class="contact-info">
-            <p><strong>شماره تماس:</strong> {{ doctors.phone }}</p>
-            <p><strong>آدرس مطب:</strong> {{ doctors.clinic_address }}</p>
-            <p><strong>شماره نظام پزشکی:</strong> {{ doctors.license_number }} </p>
+            <p><strong>شماره تماس:</strong> {{ doctor.phone }}</p>
+            <p><strong>آدرس مطب:</strong> {{ doctor.clinic_address }}</p>
+            <p><strong>شماره نظام پزشکی:</strong> {{ doctor.license_number }} </p>
         </div>
 
         <div class="about-doctor">
             <h2>درباره دکتر</h2>
-            <p>{{ doctors.biography }}</p>
+            <p>{{ doctor.biography }}</p>
         </div>
 
         <div class="doctor-status">
-            {% if doctors.is_active %}
+            {% if doctor.is_active %}
                 <p class="status active">دکتر در حال حاضر در مطب هستند</p>
             {% else %}
                 <p class="status not-active">دکتر در حال حاضر در مطب نیستند</p>
@@ -31,8 +31,8 @@
         </div>
 
        <div class="visit-cost">
-            <p><strong>هزینه ویزیت:</strong> {{ doctors.visit_cost }} ریال</p>
-            <a href="{% url 'createdoctor' %}">نوبت دهی</a>
+            <p><strong>هزینه ویزیت:</strong> {{ doctor.visit_cost }} ریال</p>
+            <a href="{% url 'availabletime_doctor' doctor.id %}">نوبت دهی</a>
         </div>
 
 <div class="comments-section">
@@ -51,7 +51,7 @@
     {% empty %}
         <p>هیچ نظری ثبت نشده است</p>
     {% endfor %}
-
+    <hr>
     <div class="new-comment-form">
         {% if user.is_authenticated %}
             <h2>نظر خود را بنویسید</h2>
