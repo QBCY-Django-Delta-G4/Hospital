@@ -20,5 +20,7 @@ urlpatterns = [
     path('patient_delete_reserve_time/<int:id>/', patient_delete_reserve_time, name='patient_delete_reserve_time'),
     path('login/', patient_login, name="login" ),
     path('logout/', patient_logout, name="logout" ),
-    path('', home, name="home")
+    path('', home, name="home"),
+    path('forgot_password/', forgot_password_view, name="forgot_password"),
+    path('reset_password/', reset_password_view, name="reset_password"),
 ]
