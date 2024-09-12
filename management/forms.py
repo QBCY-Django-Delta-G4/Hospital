@@ -2,7 +2,6 @@ from django import forms
 from .models import *
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
-
 import re
 
 
@@ -19,7 +18,7 @@ class DoctorForm(forms.ModelForm):
     last_name = forms.CharField(label='نام خانوادگی')
     phone = forms.CharField(label='شماره تماس')
     license_number = forms.CharField(label='شماره نظام پزشکی')
-    visit_cost = forms.DecimalField(label='هزینه ویزیت')
+    visit_cost = forms.DecimalField(label='نوبت دهی')
 
     def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')
@@ -71,6 +70,7 @@ class PatientForm(forms.ModelForm):
             last_name=self.cleaned_data['last_name'],
             email=self.cleaned_data['email']
         )
+
         user.set_password(self.cleaned_data['password'])
         if commit:
             user.save()
@@ -106,3 +106,8 @@ class CommentForm(forms.ModelForm):
 class LoginAsPatient(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Username'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
+
+
+
+class PatientAddBalanceForm(forms.Form):
+    balance = forms.DecimalField(min_value=0.0)

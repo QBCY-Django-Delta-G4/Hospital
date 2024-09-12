@@ -24,9 +24,10 @@
 
         <div class="doctor-status">
             {% if doctors.is_active %}
-                <p class="status active">دکتر در حال حاضر در مطب هستند</p>
+                {% comment %} <p class="status active">دکتر در حال حاضر در مطب هستند</p> {% endcomment %}
+                <p class="status active">دکتر در حال حاضر پذیرش دارد</p>
             {% else %}
-                <p class="status not-active">دکتر در حال حاضر در مطب نیستند</p>
+                <p class="status not-active">دکتر در حال حاضر پذیرش ندارد</p>
             {% endif %}
         </div>
 

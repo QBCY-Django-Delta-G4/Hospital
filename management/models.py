@@ -1,14 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.utils import timezone
-from django.conf import settings
+
 
 
 class Specialization(models.Model):
     title = models.CharField(max_length=255)
     def __str__(self) -> str:
         return self.title
+
 
 class Doctor(models.Model):
     first_name = models.CharField(max_length=255)
@@ -25,12 +25,19 @@ class Doctor(models.Model):
     def __str__(self) -> str:
         return self.first_name
 
+
 class AvailableTime(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
     patient = models.ForeignKey("Patient", on_delete=models.PROTECT, null=True, blank=True)
+
+    class Meta:
+        permissions = [
+            ("admin_available_time", "Can add-edit-remove available time"),
+            ("patient_available_time", "Can view available time"),
+        ]
 
 
 class Comment(models.Model):
@@ -52,8 +59,8 @@ class Rating(models.Model):
     )
 
 
-
 class Patient(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     phone = models.CharField(max_length=15)
+
