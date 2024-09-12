@@ -9,7 +9,8 @@ from django.contrib.auth.decorators import permission_required
 from django.db.models import Q, Value
 from django.db.models.functions import Concat
 from datetime import date
-
+from django.core.mail import send_mail
+from django.contrib.auth.hashers import make_password
 
 
 
@@ -279,6 +280,22 @@ def patient_reservation(request,id):
             availabletime.save()
             patient.save()
 
+            # send email
+            subject = 'رزور ثبت شد.'
+            message = 'روز شما با موفقیت برای دکتر' + '\n' + availabletime.doctor.first_name + ' ' + availabletime.doctor.last_name + '\n' + 'در تاریخ و ساعت : ' + str(availabletime.date) + '\n' + str(availabletime.start_time) + '\n' + str(availabletime.end_time) + '\n ثبت شد.'
+            from_mail = "test_mail@django.com"
+            recipient_list = [request.user.email]
+
+            send_mail(
+                subject,
+                message,
+                from_mail,
+                recipient_list,
+                fail_silently=False,
+            )
+
+
+
     return redirect("availabletime_doctor",id=availabletime.doctor.id)
 
 
@@ -306,6 +323,11 @@ def patient_delete_reserve_time(request,id):
         availabletime.patient = None
         availabletime.save()
 
+        cost = availabletime.doctor.visit_cost
+        patient_balance = patient.balance
+        patient.balance = patient_balance + cost
+        patient.save()
+
     return redirect('patient_reserved_times')
 
 
@@ -328,6 +350,67 @@ def patient_profile(request):
 
 
 
+def forgot_password_view(request):
+    if request.method == "POST":
+        form = ForgotPasswordForm(request.POST)
+        if form.is_valid:
+            email = form.data["email"]
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                messages.error(request, 'کاربری با این ایمیل یافت نشد.')
+                return redirect('forgot_password')
+            
+            reset_code = PasswordResetCode.objects.create(user=user)
+            request.session['reset_user_id'] = user.id
+            # send email
+            subject = 'بازیابی رمز عبور'
+            message = f'کد تایید شما: {reset_code.code}\n نام کاربری شما: {user.username}'
+            from_mail = "test_mail@django.com"
+            recipient_list = [user.email]
+            
+            send_mail(
+                subject,
+                message,
+                from_mail,
+                recipient_list,
+                fail_silently=False,
+            )
+            
+            messages.success(request, 'کد تأیید به ایمیل شما ارسال شد.')
+            return redirect('reset_password')
+    else:
+        form = ForgotPasswordForm()
+    return render(request, 'forgot_password.html', {'form': form})
 
 
+def reset_password_view(request):
+    if request.method == 'POST':
+        form = ResetPasswordForm(request.POST)
+        if form.is_valid():
+            code = form.data['code']
+            new_password = form.data['new_password']
 
+            try:
+                reset_code = PasswordResetCode.objects.get(code=code)
+            except PasswordResetCode.DoesNotExist:
+                messages.error(request, 'کد تأیید نامعتبر است.')
+                return redirect('reset_password')
+
+            id = request.session.get('reset_user_id')
+            user = reset_code.user
+            if id != user.id:
+                messages.error(request, 'کد تأیید نامعتبر است.')
+                return redirect('reset_password')
+            
+            user.password = make_password(new_password)
+            user.save()
+            reset_code.delete()
+
+            messages.success(request, 'رمز عبور شما با موفقیت تغییر کرد.')
+            return redirect('login')
+
+    else:
+        form = ResetPasswordForm()
+
+    return render(request, 'reset_password.html', {'form': form})

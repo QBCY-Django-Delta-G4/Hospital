@@ -117,3 +117,10 @@ class LoginAsPatient(AuthenticationForm):
 
 class PatientAddBalanceForm(forms.Form):
     balance = forms.DecimalField(min_value=0.0)
+
+class ForgotPasswordForm(forms.Form):
+    email = forms.EmailField()
+
+class ResetPasswordForm(forms.Form):
+    code = forms.CharField(max_length=6)
+    new_password = forms.CharField(widget=forms.PasswordInput)
