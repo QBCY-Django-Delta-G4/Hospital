@@ -75,17 +75,14 @@ def create_patient(request):
 def create_availabletime(request:HttpRequest,id):
     doctor = get_object_or_404(Doctor, id=id)
     if request.method == "POST":
-        form = AvailableTimeForm(request.POST)
+        date = request.POST.get('date')
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
 
-        if form.is_valid():
-            fr = form.save(commit=False)
-            fr.doctor = doctor
-            fr.save()
-            return redirect("availabletime_doctor", id=id)
-    else:
-        form = AvailableTimeForm()
+        AvailableTime.objects.create(date=date,start_time=start_time,end_time=end_time,doctor=doctor)
 
-    return render(request, "Create_AvailableTime.html", {"form": form})
+        return redirect("availabletime_doctor", id=id)
+    return render(request, "Create_AvailableTime.html", {'doctor':doctor})
 
 
 @login_required(login_url='login')
@@ -93,13 +90,12 @@ def create_availabletime(request:HttpRequest,id):
 def edit_availabletime(request:HttpRequest,id):
     availabletime = AvailableTime.objects.get(pk=id)
     if request.method == "POST":
-        form = AvailableTimeForm(request.POST, instance=availabletime)
-        if form.is_valid():
-            form.save()
-            return redirect("availabletime_doctor", id=availabletime.doctor.id)
-    else:
-        form = AvailableTimeForm(instance=availabletime)
-    return render(request, "Create_AvailableTime.html", {"form": form})
+        availabletime.date = request.POST.get('date')
+        availabletime.start_time = request.POST.get('start_time')
+        availabletime.end_time = request.POST.get('end_time')
+        availabletime.save()
+        return redirect("availabletime_doctor", id=availabletime.doctor.id)
+    return render(request, "edit_availabletime.html", {"availabletime": availabletime})
 
 
 @login_required(login_url='login')

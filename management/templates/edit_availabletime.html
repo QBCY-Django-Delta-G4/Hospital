@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
+{% load patient_tags %}
 {% load static %}
 {% block content %}
     {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/create_doctor.css' %}">
     {% endblock %}
     <div class="container">
-        <h1 class="page-title">ایجاد نوبت جدید دکتر 
-            <a href="{% url 'availabletime_doctor' doctor.id %}">
-                {{ doctor.first_name }} {{ doctor.last_name }}
+        <h1 class="page-title">ویرایش نوبت دکتر 
+            <a href="{% url 'availabletime_doctor' availabletime.doctor.id %}">
+                {{ availabletime.doctor.first_name }} {{ availabletime.doctor.last_name }}
             </a>
         </h1>
 
@@ -26,17 +27,17 @@
                 {% csrf_token %}
                 <p>
                     <label for="id_date">Date:</label>
-                    <input type="date" name="date" required="" id="id_date">
+                    <input type="date" name="date" required="" id="id_date" value="{% inp_date_format availabletime.date %}">
                 </p>
                 <p>
                     <label for="id_start_time">Start time:</label>
-                    <input type="time" name="start_time" required="" id="id_start_time">
+                    <input type="time" name="start_time" required="" id="id_start_time" value="{% time_format availabletime.start_time %}">
                 </p>
                 <p>
                     <label for="id_end_time">End Time:</label>
-                    <input type="time" name="end_time" required="" id="id_end_time">
+                    <input type="time" name="end_time" required="" id="id_end_time" value="{% time_format availabletime.end_time %}">
                 </p>
-                <button type="submit" class="submit-btn">ایجاد نوبت</button>
+                <button type="submit" class="submit-btn">ویرایش نوبت</button>
             </form>
         </div>
     </div>

@@ -12,6 +12,10 @@ def date_format(date):
     return date.strftime("%Y.%m.%d")
 
 @register.simple_tag
+def inp_date_format(date):
+    return date.strftime("%Y-%m-%d")
+
+@register.simple_tag
 def time_format(date):
     return date.strftime("%H:%M")
 
