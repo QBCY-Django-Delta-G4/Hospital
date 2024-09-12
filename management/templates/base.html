@@ -11,11 +11,11 @@
 </head>
 <body dir="rtl">
     <header>
-    <a href="{% url 'home' %}">
-        <h1>سیستم نوبت دهی آنلاین</h1>
-    </a>
-        {% if user.is_authenticated %}
+        <a href="{% url 'home' %}">
+            <h1>سیستم نوبت دهی آنلاین</h1>
+        </a>
 
+        {% if user.is_authenticated %}
         <nav>
             {% if user.is_staff %}
                 <ul>
@@ -25,33 +25,41 @@
                 </ul>
             {% else %}
                 <ul>
-                    <a href="{% url 'patient_add_balance' %}">موجودی : {% patient_balance user %}</a>
-                </ul>
-                <ul>
-                    <a href="{% url 'patient_reserved_times' %}">تایم های رزرو شده</a>
+                    <li><a href="{%  url 'patient_add_balance' %}" 
+                        style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; text-align: center; text-decoration: none; border-radius: 5px; border: 1px solid #007bff; cursor: pointer;">
+                        موجودی  {% patient_balance user %}
+                     </a>
+                     </li>
+                    <li><a href="{%  url 'patient_reserved_times' %}" 
+                        style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; text-align: center; text-decoration: none; border-radius: 5px; border: 1px solid #007bff; cursor: pointer;">
+                        زمان های رزرو شده
+                     </a>
+                     </li>
+                    <li><a href="{% url 'patient_profile' %}" 
+                        style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; text-align: center; text-decoration: none; border-radius: 5px; border: 1px solid #007bff; cursor: pointer;">
+                        پروفایل من
+                     </a></li>
                 </ul>
             {% endif %}
         </nav>
-
-            <a href="{% url 'logout' %}">خروج</a>
+        <a href="{% url 'logout' %}">خروج</a>
+        {% else %}
+        <nav>
+            <ul>
+                <li><a href="{% url 'login' %}">ورود</a></li>
+                <li><a href="{% url 'create_patient' %}">ثبت نام</a></li>
+            </ul>
+        </nav>
         {% endif %}
-
-
-    {% if not user.is_authenticated  %}
-        <a href="{% url 'login' %}">ورود</a>
-        <a href="{% url 'create_patient' %}">ثبت نام</a>
-    {% endif %}
-
     </header>
 
     <main>
         {% block content %}
-        <!-- محتوا در اینجا قرار می‌گیرد -->
         {% endblock %}
     </main>
 
     <footer>
-        <p>&copy; 2024  تمام حقوق محفوظ است.</p>
+        <p>&copy; 2024 تمام حقوق محفوظ است.</p>
     </footer>
 </body>
 </html>
