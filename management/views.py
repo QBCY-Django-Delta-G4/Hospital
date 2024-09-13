@@ -11,6 +11,8 @@ from django.db.models.functions import Concat
 from datetime import date
 from django.core.mail import send_mail
 from django.contrib.auth.hashers import make_password
+from django.core.paginator import Paginator
+
 
 
 
@@ -20,7 +22,7 @@ def create_doctor(request):
     if request.method == 'POST':
         forms = DoctorForm(request.POST)
         if not forms.is_valid():
-            return render(request, 'create_doctor.html', {'forms': forms})
+            return render(request, 'doctor/create_doctor.html', {'forms': forms})
         else:
             forms.save()
             messages.success(request, 'ثبت شد')
@@ -28,7 +30,7 @@ def create_doctor(request):
     else:
         forms = DoctorForm()
 
-    return render(request, 'create_doctor.html', {'forms': forms})
+    return render(request, 'doctor/create_doctor.html', {'forms': forms})
 
 
 @login_required(login_url='login')
@@ -37,7 +39,7 @@ def view_doctor(request):
     context = {
         'doctors': doctors
     }
-    return render(request, 'view_doctor.html', context)
+    return render(request, 'doctor/view_doctor.html', context)
 
 
 @login_required(login_url='login')
@@ -46,7 +48,7 @@ def create_specialize(request):
     if request.method == 'POST':
         forms = SpecializationForm(request.POST)
         if not forms.is_valid():
-            return render(request, 'create_specialize.html', {'forms': forms})
+            return render(request, 'doctor/create_specialize.html', {'forms': forms})
 
         forms.save()
         messages.success(request, 'ثبت شد')
@@ -55,7 +57,7 @@ def create_specialize(request):
     else:
         forms = SpecializationForm()
 
-    return render(request, 'create_specialize.html', {'forms': forms})
+    return render(request, 'doctor/create_specialize.html', {'forms': forms})
 
 
 def create_patient(request):
@@ -68,7 +70,7 @@ def create_patient(request):
             return redirect('login')
     else:
         form = PatientForm()
-    return render(request, 'add_patient.html', {'form': form})
+    return render(request, 'patient/add_patient.html', {'form': form})
 
 
 @login_required(login_url='login')
@@ -83,7 +85,7 @@ def create_availabletime(request:HttpRequest,id):
         AvailableTime.objects.create(date=date,start_time=start_time,end_time=end_time,doctor=doctor)
 
         return redirect("availabletime_doctor", id=id)
-    return render(request, "Create_AvailableTime.html", {'doctor':doctor})
+    return render(request, "avtime/Create_AvailableTime.html", {'doctor':doctor})
 
 
 @login_required(login_url='login')
@@ -96,7 +98,7 @@ def edit_availabletime(request:HttpRequest,id):
         availabletime.end_time = request.POST.get('end_time')
         availabletime.save()
         return redirect("availabletime_doctor", id=availabletime.doctor.id)
-    return render(request, "edit_availabletime.html", {"availabletime": availabletime})
+    return render(request, "avtime/edit_availabletime.html", {"availabletime": availabletime})
 
 
 @login_required(login_url='login')
@@ -108,23 +110,6 @@ def delete_availabletime(request:HttpRequest,id):
 
 
 
-
-
-@login_required(login_url='login')
-@permission_required('management.add_rating', raise_exception=True)
-def create_rating(request):
-    if request.method == "POST":
-        form = RatingForm(request.POST) 
-
-        if form.is_valid():
-            messages.success(request, 'ثبت شد')
-            form.save()
-            return redirect("create_rating")
-
-    else:
-        form = RatingForm()
-
-    return render(request, "create_rating.html", {"form": form})
 
 
 @login_required(login_url='login')
@@ -147,41 +132,102 @@ def edit_doctor(request, id):
             return redirect('viewdoctor')
     else:
         form = DoctorForm(instance=doctor)
-    return render(request, 'edit_doctor.html', {'forms': form})
+    return render(request, 'doctor/edit_doctor.html', {'forms': form})
 
 
 @login_required(login_url='login')
+# @permission_required('management.change_doctor', raise_exception=True)
 def detail_doctor(request, id):
-    doctor = get_object_or_404(Doctor, id=id)
-    comments = doctor.comments.filter(active=True)
+    doctors = get_object_or_404(Doctor, id=id)
+    comments = doctors.comments.filter(is_deleted=False, active=True)
+
+    paginator = Paginator(comments, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     new_comment = None
-
+    rating_form = RatingForm()
     if request.method == 'POST':
         comment_form = CommentForm(data=request.POST)
         if comment_form.is_valid():
             new_comment = comment_form.save(commit=False)
-            new_comment.doctor = doctor
+            new_comment.doctor = doctors
             try:
                 patient = Patient.objects.get(user=request.user)
                 new_comment.patient = patient
                 new_comment.save()
-                messages.success(request, 'نظر شما با موفقیت ثبت شد.')
-                return redirect('detail_doctor', id=id)  # به صفحه دکتر هدایت می‌شود تا نظر جدید نمایش داده شود
+                messages.success(request, 'نظر شما با موفقیت ارسال شد.')
+                return redirect('detail_doctor', id=id)
             except Patient.DoesNotExist:
-                messages.error(request, 'بیمار مربوطه یافت نشد.')
+                messages.error(request, 'بیمار مربوطه یافت نشد')
+                return redirect('detail_doctor', id=id)
     else:
         comment_form = CommentForm()
 
     context = {
-        'doctor': doctor,
+        'doctors': doctors,
+        'page_obj': page_obj,
         'comments': comments,
         'new_comment': new_comment,
-        'comment_form': comment_form
+        'comment_form': comment_form,
+        'rating_form': rating_form,
+        'is_admin': request.user.is_staff,
     }
+    return render(request, 'doctor/detail_doctor.html', context)
 
-    return render(request, 'detail_doctor.html', context)
 
+
+def add_rating(request, doctor_id):
+    if request.method == 'POST':
+        doctor = get_object_or_404(Doctor, id=doctor_id)
+        patient = get_object_or_404(Patient,
+                                    user=request.user)
+        score = request.POST.get('score')
+
+
+        rating, created = Rating.objects.get_or_create(
+            doctor=doctor,
+            patient=patient,
+            defaults={'score': score}
+        )
+
+        if not created:
+            rating.score = score
+            rating.save()
+
+        return redirect('doctor_detail', doctor_id=doctor.id)
+
+def delete_comment(request, doctor_id, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if request.user.is_authenticated:
+        if request.user.is_staff or (comment.patient.user == request.user):
+            comment.is_deleted = True
+            comment.save()
+            messages.success(request, 'نظر با موفقیت حذف شد.')
+        else:
+            messages.error(request, 'شما مجاز به حذف این نظر نیستید.')
+    else:
+        messages.error(request, 'ابتدا وارد حساب کاربری خود شوید.')
+
+    return redirect('detail_doctor', id=doctor_id)
+
+
+# @login_required(login_url='login')
+# @permission_required('management.add_rating', raise_exception=True)
+# def create_rating(request):
+#     if request.method == "POST":
+#         form = RatingForm(request.POST)
+#         if form.is_valid():
+#             rating = form.save(commit=False)
+#
+#             rating.patient = request.user.patient
+#             form.save()
+#             messages.success(request, 'امتیاز شما ثبت شد')
+#             return redirect("detail_doctor")
+#
+#     else:
+#         form = RatingForm()
+#     return render(request, 'doctor/detail_doctor.html', {'form': form})
 
 # @login_required(login_url='login')
 # @permission_required('management.add_comment', raise_exception=True)
@@ -221,7 +267,7 @@ def availabletime_doctor(request:HttpRequest,id):
         "doctor":doctor,
         "availabletimes":availabletimes
     }
-    return render(request,"availabletime_doctor.html",context=context)
+    return render(request,"avtime/availabletime_doctor.html",context=context)
 
 
 
@@ -235,7 +281,7 @@ def patient_login(request):
     else:
         form = LoginAsPatient()
 
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'login/login.html', {'form': form})
 
 
 def home(request):
@@ -257,7 +303,7 @@ def home(request):
         'doctors':doctors
     }
 
-    return render(request, 'home.html', context)
+    return render(request, 'login/home.html', context)
 
 
 @login_required(login_url='login')
@@ -311,7 +357,7 @@ def patient_add_balance(request):
             return redirect('home')
     else:
         form = PatientAddBalanceForm()
-    return render(request, 'patient_add_balance.html', {'forms': form})
+    return render(request, 'patient/patient_add_balance.html', {'forms': form})
 
 
 @login_required(login_url='login')
@@ -337,12 +383,12 @@ def patient_reserved_times(request):
     availabletimes = AvailableTime.objects.filter(patient=patient).order_by('-date')
 
     context = {"availabletimes":availabletimes,}
-    return render(request,"patient_reserved_times.html",context=context)
+    return render(request,"patient/patient_reserved_times.html",context=context)
 
 @login_required(login_url='login')
 def patient_profile(request):
     patient, created = Patient.objects.get_or_create(user=request.user)
-    return render(request, 'patient_profile.html', {'patient': patient})
+    return render(request, 'patient/patient_profile.html', {'patient': patient})
 
 
 
@@ -380,7 +426,7 @@ def forgot_password_view(request):
             return redirect('reset_password')
     else:
         form = ForgotPasswordForm()
-    return render(request, 'forgot_password.html', {'form': form})
+    return render(request, 'login/forgot_password.html', {'form': form})
 
 
 def reset_password_view(request):
@@ -412,4 +458,4 @@ def reset_password_view(request):
     else:
         form = ResetPasswordForm()
 
-    return render(request, 'reset_password.html', {'form': form})
+    return render(request, 'login/reset_password.html', {'form': form})

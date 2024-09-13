@@ -121,3 +121,38 @@
 .new-comment-form input[type="submit"]:hover {
     background-color: #0056b3;
 }
+
+/* Ensure the .comment container is positioned correctly */
+.comment {
+    position: relative;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+/* Position the rating form container */
+.rating-form-container {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: #f1f1f1;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+/* Style the submit button */
+.rating-button {
+    background-color: #fa8072; /* Salmon color */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 45px;
+}
+
+.rating-button:hover {
+    background-color: #e07b6d; /* Slightly darker salmon color on hover */
+}

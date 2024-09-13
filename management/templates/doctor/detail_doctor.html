@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<body>
+    {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/detail_doctor.css' %}">
+        <style>
+.rating-section {
+    display: flex; /* استفاده از Flexbox برای چیدمان */
+    align-items: center; /* تراز کردن عمودی محتوا */
+    justify-content: flex-start; /* قرار دادن محتوا به سمت چپ */
+    margin-top: 10px; /* فاصله بالای بخش امتیازدهی */
+    padding: 10px; /* فضای داخلی اطراف بخش امتیازدهی */
+    border: 1px solid #ddd; /* حاشیه برای بهتر دیدن محدوده */
+    border-radius: 5px; /* گوشه‌های گرد برای زیبایی */
+}
+
+.rating-form {
+    margin-right: 20px; /* فاصله از سمت راست */
+}
+
+.rating-button {
+    margin-top: 10px; /* فاصله بالای دکمه ارسال */
+}
+        </style>
+    {% endblock %}
+    <div class="doctor-profile">
+        <!-- اطلاعات دکتر -->
+        <div class="header">
+            <h1 class="doctor-name">{{ doctors.first_name }} {{ doctors.last_name }}</h1>
+            <p class="specialization"><strong>تخصص:</strong> {{ doctors.specializations }}</p>
+        </div>
+
+        <div class="contact-info">
+            <p><strong>شماره تماس:</strong> {{ doctors.phone }}</p>
+            <p><strong>آدرس مطب:</strong> {{ doctors.clinic_address }}</p>
+            <p><strong>شماره نظام پزشکی:</strong> {{ doctors.license_number }}</p>
+        </div>
+
+        <div class="about-doctor">
+            <h2>درباره دکتر</h2>
+            <p>{{ doctors.biography }}</p>
+        </div>
+
+        <div class="doctor-status">
+            {% if doctors.is_active %}
+                <p class="status active">دکتر در حال حاضر در مطب هستند</p>
+            {% else %}
+                <p class="status not-active">دکتر در حال حاضر در مطب نیستند</p>
+            {% endif %}
+        </div>
+
+        <div class="visit-cost">
+            <p><strong>هزینه ویزیت:</strong> {{ doctors.visit_cost }} ریال</p>
+            <a href="{% url 'createdoctor' %}">نوبت دهی</a>
+        </div>
+
+        <div class="comments-section">
+            {% with page_obj.paginator.count as total_comments %}
+                <h2>تعداد نظرات: {{ total_comments }}</h2>
+            {% endwith %}
+            {% for comment in page_obj %}
+                <div class="comment">
+                    <p class="comment-author">نظر توسط {{ comment.patient.user.username }}</p>
+                    <div class="comment-text">
+                        {{ comment.description|linebreaks }}
+                        <br>
+                        {% if request.user.is_authenticated %}
+                            {% if request.user.is_staff or comment.patient.user == request.user %}
+                                <a href="{% url 'delete_comment' doctor_id=doctors.id comment_id=comment.id %}">حذف</a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="rating-section">
+                        {% if comment.rating %}
+                            <p>امتیاز: {{ comment.rating }}</p>
+                        {% else %}
+                            <form method="post" class="rating-form">
+                                {% csrf_token %}
+                                {{ rating_form.as_p }}
+                                <input type="submit" value="ثبت امتیاز" class="rating-button">
+                            </form>
+                        {% endif %}
+                    </div>
+                    <p class="comment-date">در تاریخ {{ comment.created_at }}</p>
+                </div>
+                {% empty %}
+                <p>هیچ نظری ثبت نشده است</p>
+            {% endfor %}
+
+            {% if new_comment %}
+                <h2>نظر شما با موفقیت ثبت شد</h2>
+            {% else %}
+                <h2>نظر خود را بنویسید</h2>
+                <div class="new-comment-form">
+                    <form method="post">
+                        {{ comment_form.as_p }}
+                        {% csrf_token %}
+                        <input type="submit" value="ثبت نظر">
+                    </form>
+                </div>
+            {% endif %}
+
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; اولین</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">قبلی</a>
+                    {% endif %}
+
+                    <span class="current">
+                        صفحه {{ page_obj.number }} از {{ page_obj.paginator.num_pages }}
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">بعدی</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">آخرین &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

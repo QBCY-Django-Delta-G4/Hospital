@@ -88,12 +88,16 @@ class AvailableTimeForm(forms.ModelForm):
         exclude = ["patient","doctor"]
 
 
-
-
 class RatingForm(forms.ModelForm):
     class Meta:
         model = Rating
-        fields = ["score"]
+        fields = ['score']
+        widgets = {
+            'score': forms.NumberInput(attrs={'min': 1, 'max': 5}),
+        }
+        labels = {
+            'description': 'امتیاز'
+        }
 
 
 class CommentForm(forms.ModelForm):
@@ -106,7 +110,6 @@ class CommentForm(forms.ModelForm):
         labels = {
             'description': 'نظر شما'
         }
-
 
 
 class LoginAsPatient(AuthenticationForm):

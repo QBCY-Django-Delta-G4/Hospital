@@ -1,7 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Rating</title>
+</head>
 <body>
+    <h1>Create Rating</h1>
+
+    <!-- نمایش فرم -->
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Submit">
+        {{ forms.as_p }}
+        <button type="submit">Submit</button>
     </form>
+
+    <!-- نمایش پیام‌ها -->
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <!-- نمایش لیست امتیازات -->
+    <h2>Ratings List</h2>
+    <ul>
+        {% for rating in ratings %}
+            <li>{{ rating }} </li>
+        {% empty %}
+            <li>No ratings available.</li>
+        {% endfor %}
+    </ul>
 </body>
+</html>

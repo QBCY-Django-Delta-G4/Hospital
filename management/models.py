@@ -49,19 +49,30 @@ class Comment(models.Model):
     updated = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
     is_visited = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.description}"
 
 
 class Rating(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
     patient = models.ForeignKey("Patient", on_delete=models.CASCADE, blank=True, null=True)
+    comment = models.OneToOneField(Comment, on_delete=models.CASCADE, null=True)
     score = models.PositiveIntegerField(
         validators=[
             MinValueValidator(1),
             MaxValueValidator(5)
         ]
     )
+    def __str__(self):
+        return f"{self.score}"
+
+    def save(self, *args, **kwargs):
+        # اطمینان حاصل کنید که کامنت به دکتر مربوط به بیمار است
+        if self.comment.patient != self.patient:
+            raise ValueError("Comment must belong to the patient providing the rating.")
+        super().save(*args, **kwargs)
 
 
 class Patient(models.Model):
