@@ -10,11 +10,18 @@
 
     <div class="container">
         <h1>زمان های رزرو شده برای شما</h1>
-
+        <div class="message-container">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}" id="message-{{ forloop.counter }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
         {% if availabletimes %}
             {% for time in availabletimes %}
                 <div class="available-time">
-                    {% comment %} <div class="day">{{ time.date }}</div> {% endcomment %}
                     <div class="day">{% date_format time.date %}</div>
                     <div class="time">{% time_format time.end_time %} - {% time_format time.start_time %}</div>
 
@@ -24,7 +31,7 @@
                         </a>
                     </div>
                     <div class="actions">
-                        <a href="{% url "patient_delete_reserve_time" time.id %}" class="button">حذف</a>
+                        <a href="{% url "patient_delete_reserve_time" time.id 1 %}" class="button-exit">حذف</a>
                     </div>
                 </div>
             {% endfor %}
@@ -33,4 +40,16 @@
         {% endif %}
     </div>
     
+    <script>
+        // انتخاب پیام‌ها
+        document.querySelectorAll('.messages li').forEach(function(message) {
+            // ناپدید شدن پیام‌ها بعد از ۳ ثانیه
+            setTimeout(function() {
+                message.style.opacity = '0'; // به تدریج ناپدید می‌شود
+                setTimeout(function() {
+                    message.remove(); // حذف کامل پیام از DOM
+                }, 1000); // زمان تطابق با transition
+            }, 3000); // 3 ثانیه برای نمایش
+        });
+    </script>
 {% endblock %}

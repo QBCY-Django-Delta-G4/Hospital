@@ -14,17 +14,25 @@
                 {{ doctor.first_name }} {{ doctor.last_name }}
             </a>
         </h1>
+        <div class="message-container">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}" id="message-{{ forloop.counter }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
         {% if is_admin %}
         <a href="{% url "create_availabletime" doctor.pk %}" class="button">اضافه کردن زمان جدید</a>
         {% endif %}
 
         {% if availabletimes %}
             {% if not is_admin and not doctor.is_active %}
-            <p>زمانی برای نمایش وجود ندارد.</p>
+                <p>زمانی برای نمایش وجود ندارد.</p>
             {% else %}
             {% for time in availabletimes %}
                 <div class="available-time">
-                    {% comment %} <div class="day">{{ time.date }}</div> {% endcomment %}
                     <div class="day">{% date_format time.date %}</div>
                     <div class="time">{% time_format time.end_time %} - {% time_format time.start_time %}</div>
 
@@ -38,9 +46,13 @@
                     <div class="actions">
                         {% if is_admin %}
                             <a href="{% url "edit_availabletime" time.id %}" class="button">ویرایش</a>
-                            <a href="{% url "delete_availabletime" time.id %}" class="button">حذف</a>
+                            <a href="{% url "delete_availabletime" time.id %}" class="button-exit">حذف</a>
                         {% else %}
-                            <a href="{% url "patient_reservation" time.id %}" class="button">رزرو</a>
+                            {% if time.patient is None %}
+                                <a href="{% url "patient_reservation" time.id %}" class="button">رزرو</a>
+                            {% else %}
+                                <a href="{% url "patient_delete_reserve_time" time.id 2 %}" class="button-exit">حذف</a>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
@@ -51,4 +63,16 @@
         {% endif %}
     </div>
     
+    <script>
+        // انتخاب پیام‌ها
+        document.querySelectorAll('.messages li').forEach(function(message) {
+            // ناپدید شدن پیام‌ها بعد از ۳ ثانیه
+            setTimeout(function() {
+                message.style.opacity = '0'; // به تدریج ناپدید می‌شود
+                setTimeout(function() {
+                    message.remove(); // حذف کامل پیام از DOM
+                }, 1000); // زمان تطابق با transition
+            }, 3000); // 3 ثانیه برای نمایش
+        });
+    </script>
 {% endblock %}

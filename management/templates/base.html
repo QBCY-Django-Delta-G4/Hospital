@@ -15,42 +15,31 @@
             <h1>سیستم نوبت دهی آنلاین</h1>
         </a>
 
-        {% if user.is_authenticated %}
-        <nav>
-            {% if user.is_staff %}
-                <ul>
-                    <li><a href="{% url 'viewdoctor' %}">نمایش دکترها</a></li>
-                    <li><a href="{% url 'createdoctor' %}">ساخت دکتر</a></li>
-                    <li><a href="{% url 'createspecialize' %}">تخصص جدید</a></li>
-                </ul>
-            {% else %}
-                <ul>
-                    <li><a href="{%  url 'patient_add_balance' %}" 
-                        style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; text-align: center; text-decoration: none; border-radius: 5px; border: 1px solid #007bff; cursor: pointer;">
-                        موجودی  {% patient_balance user %}
-                     </a>
-                     </li>
-                    <li><a href="{%  url 'patient_reserved_times' %}" 
-                        style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; text-align: center; text-decoration: none; border-radius: 5px; border: 1px solid #007bff; cursor: pointer;">
-                        زمان های رزرو شده
-                     </a>
-                     </li>
-                    <li><a href="{% url 'patient_profile' %}" 
-                        style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; text-align: center; text-decoration: none; border-radius: 5px; border: 1px solid #007bff; cursor: pointer;">
-                        پروفایل من
-                     </a></li>
-                </ul>
-            {% endif %}
-        </nav>
-        <a href="{% url 'logout' %}">خروج</a>
-        {% else %}
         <nav>
             <ul>
-                <li><a href="{% url 'login' %}">ورود</a></li>
-                <li><a href="{% url 'create_patient' %}">ثبت نام</a></li>
+            {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                    <li><a href="{% url 'viewdoctor' %}" class="button">مدیریت دکترها</a></li>
+                    <li><a href="{% url 'createdoctor' %}" class="button">ساخت دکتر</a></li>
+                    <li><a href="{% url 'createspecialize' %}" class="button">تخصص جدید</a></li>
+                {% else %}
+                    <li>
+                        <a href="{%  url 'patient_add_balance' %}" class="button">موجودی : {% patient_balance user %}</a>
+                    </li>
+                    <li>
+                        <a href="{%  url 'patient_reserved_times' %}" class="button">زمان های رزرو شده</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'patient_profile' %}" class="button">پروفایل من</a>
+                    </li>
+                {% endif %}
+                <li><a href="{% url 'logout' %}" class="button-exit">خروج</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}" class="button-exit">ورود</a></li>
+                <li><a href="{% url 'create_patient' %}" class="button-exit">ثبت نام</a></li>
+            {% endif %}
             </ul>
         </nav>
-        {% endif %}
     </header>
 
     <main>

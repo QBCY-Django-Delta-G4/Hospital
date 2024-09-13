@@ -5,6 +5,15 @@
     {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/detail_doctor.css' %}">
     {% endblock %}
+    <div class="message-container">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}" id="message-{{ forloop.counter }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
     <div class="doctor-profile">
         <div class="header">
             <h1 class="doctor-name">{{ doctor.first_name }} {{ doctor.last_name }}</h1>
@@ -66,4 +75,17 @@
     </div>
 </div>
 </body>
+
+<script>
+    // انتخاب پیام‌ها
+    document.querySelectorAll('.messages li').forEach(function(message) {
+        // ناپدید شدن پیام‌ها بعد از ۳ ثانیه
+        setTimeout(function() {
+            message.style.opacity = '0'; // به تدریج ناپدید می‌شود
+            setTimeout(function() {
+                message.remove(); // حذف کامل پیام از DOM
+            }, 1000); // زمان تطابق با transition
+        }, 3000); // 3 ثانیه برای نمایش
+    });
+</script>
 {% endblock %}

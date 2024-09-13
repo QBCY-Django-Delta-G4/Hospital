@@ -70,6 +70,17 @@
     <div class="wrapper">
         <div class="container">
             <h2 class="page-title">کاربر جدید</h2>
+
+            <div class="message-container">
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}" id="message-{{ forloop.counter }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+
             <div class="form-container">
                 <form method="post">
                     {% csrf_token %}
@@ -79,4 +90,17 @@
             </div>
         </div>
     </div>
+
+<script>
+    // انتخاب پیام‌ها
+    document.querySelectorAll('.messages li').forEach(function(message) {
+        // ناپدید شدن پیام‌ها بعد از ۳ ثانیه
+        setTimeout(function() {
+            message.style.opacity = '0'; // به تدریج ناپدید می‌شود
+            setTimeout(function() {
+                message.remove(); // حذف کامل پیام از DOM
+            }, 1000); // زمان تطابق با transition
+        }, 3000); // 3 ثانیه برای نمایش
+    });
+</script>
 {% endblock %}
