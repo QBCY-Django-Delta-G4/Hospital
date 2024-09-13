@@ -21,6 +21,8 @@
                     <th>نام</th>
                     <th>نام خانوادگی</th>
                     <th>تخصص</th>
+                    <th>ویزیت</th>
+                    <th>وضعیت</th>
                     <th></th>
                 </tr>
             </thead>
@@ -30,6 +32,14 @@
                         <td><a href="{% url 'detail_doctor' doctor.pk %}">{{ doctor.first_name }}</a></td>
                         <td>{{ doctor.last_name }}</td>
                         <td>{{ doctor.specializations.title }}</td>
+                        <td>{{ doctor.visit_cost }}</td>
+                        <td>
+                            {% if doctor.is_active %}
+                                <p>فعال</p>
+                            {% else %}
+                                <p>غیرفعال</p>
+                            {% endif %}
+                        </td>
                         <td>
                             <a href="{% url 'edit_doctor' doctor.pk %}" class="button" style="font-size: 13px;">ویرایش</a>
                             <a href="{% url 'delete_doctor' doctor.pk %}" class="button-exit">حذف</a>

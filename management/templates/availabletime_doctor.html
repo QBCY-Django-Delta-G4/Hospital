@@ -46,7 +46,7 @@
                     <div class="actions">
                         {% if is_admin %}
                             <a href="{% url "edit_availabletime" time.id %}" class="button">ویرایش</a>
-                            <a href="{% url "delete_availabletime" time.id %}" class="button">حذف</a>
+                            <a href="{% url "delete_availabletime" time.id %}" class="button-exit">حذف</a>
                         {% else %}
                             {% if time.patient is None %}
                                 <a href="{% url "patient_reservation" time.id %}" class="button">رزرو</a>

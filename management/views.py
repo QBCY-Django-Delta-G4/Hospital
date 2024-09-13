@@ -23,7 +23,8 @@ def create_doctor(request):
             return render(request, 'create_doctor.html', {'forms': forms})
         else:
             forms.save()
-            messages.success(request, 'ثبت شد')
+            msg = f'دکتر {forms.cleaned_data["first_name"]} {forms.cleaned_data["last_name"]} اضافه شد.'
+            messages.success(request, msg)
             return redirect('viewdoctor')
     else:
         forms = DoctorForm()
@@ -49,7 +50,8 @@ def create_specialize(request):
             return render(request, 'create_specialize.html', {'forms': forms})
 
         forms.save()
-        messages.success(request, 'ثبت شد')
+        msg = f'تخصص {forms.cleaned_data["title"]} اضافه شد.'
+        messages.success(request, msg)
         return redirect('viewdoctor')
 
     else:
@@ -65,7 +67,8 @@ def create_patient(request):
         form = PatientForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'ثبت شد')
+            msg = f'بیمار {forms.cleaned_data["first_name"]} {forms.cleaned_data["last_name"]} اضافه شد.'
+            messages.success(request, msg)
             return redirect('login')
     else:
         form = PatientForm()
@@ -82,7 +85,8 @@ def create_availabletime(request:HttpRequest,id):
         end_time = request.POST.get('end_time')
 
         AvailableTime.objects.create(date=date,start_time=start_time,end_time=end_time,doctor=doctor)
-        messages.success(request, 'ثبت شد')
+        msg = f'نوبت خالی برای دکتر {doctor.first_name} {doctor.last_name} اضافه شد.'
+        messages.success(request, msg)
         return redirect("availabletime_doctor", id=id)
     return render(request, "Create_AvailableTime.html", {'doctor':doctor})
 
@@ -96,7 +100,8 @@ def edit_availabletime(request:HttpRequest,id):
         availabletime.start_time = request.POST.get('start_time')
         availabletime.end_time = request.POST.get('end_time')
         availabletime.save()
-        messages.success(request, 'ثبت شد')
+        msg = f'نوبت خالی برای دکتر {availabletime.doctor.first_name} {availabletime.doctor.last_name} اضافه شد.'
+        messages.success(request, msg)
         return redirect("availabletime_doctor", id=availabletime.doctor.id)
     return render(request, "edit_availabletime.html", {"availabletime": availabletime})
 
@@ -106,7 +111,8 @@ def edit_availabletime(request:HttpRequest,id):
 def delete_availabletime(request:HttpRequest,id):
     availabletime = AvailableTime.objects.get(pk=id)
     availabletime.delete()
-    messages.success(request, 'حذف شد')
+    msg = f'نوبت خالی برای دکتر {availabletime.doctor.first_name} {availabletime.doctor.last_name} حذف شد.'
+    messages.success(request, msg)
     return redirect("availabletime_doctor", id=availabletime.doctor.id)
 
 
@@ -136,7 +142,8 @@ def delete_doctor(request, id):
     doctor = Doctor.objects.get(id=id)
     doctor.is_deleted = True
     doctor.save()
-    messages.success(request, 'حذف شد')
+    msg = f'دکتر {doctor.first_name} {doctor.last_name} حذف شد.'
+    messages.success(request, msg)
     return redirect("viewdoctor")
 
 
@@ -148,7 +155,8 @@ def edit_doctor(request, id):
         form = DoctorForm(request.POST, instance=doctor)
         if form.is_valid():
             form.save()
-            messages.success(request, 'ثبت شد')
+            msg = f'دکتر {doctor.first_name} {doctor.last_name} ویرایش شد.'
+            messages.success(request, msg)
             return redirect('viewdoctor')
     else:
         form = DoctorForm(instance=doctor)
@@ -236,7 +244,8 @@ def patient_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            messages.success(request, 'وارد شدید')
+            msg = f'با نام کاربری {user.username} وارد شدید.'
+            messages.success(request, msg)
             return redirect('home')
     else:
         form = LoginAsPatient()
@@ -301,8 +310,9 @@ def patient_reservation(request,id):
                 fail_silently=False,
             )
 
+    msg = f'نوبت دکتر {availabletime.doctor.first_name} {availabletime.doctor.last_name} برای شما رزرو شد.'
+    messages.success(request, msg)
 
-    messages.success(request, 'ثبت شد')
     return redirect("availabletime_doctor",id=availabletime.doctor.id)
 
 
@@ -315,7 +325,8 @@ def patient_add_balance(request):
             balance = form.cleaned_data["balance"]
             patient.balance = patient.balance + balance
             patient.save()
-            messages.success(request, 'اضافه شد')
+            msg = f'مبلغ {balance} به کبف پول شما اضافه شد.'
+            messages.success(request, msg)
             return redirect('home')
     else:
         form = PatientAddBalanceForm()
@@ -335,7 +346,8 @@ def patient_delete_reserve_time(request:HttpRequest,id,r):
         patient_balance = patient.balance
         patient.balance = patient_balance + cost
         patient.save()
-        messages.success(request, 'حذف شد')
+        msg = f'نوبت دکتر {availabletime.doctor.first_name} {availabletime.doctor.last_name} برای شما حذف شد و مبلغ ویزیت به کیف پول شما اضافه گردید.'
+        messages.success(request, msg)
 
     if r == 1:
         return redirect('patient_reserved_times')
