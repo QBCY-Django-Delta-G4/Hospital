@@ -1,8 +1,14 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
+    {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/edit_doctor.css' %}">
+    {% endblock %}
+
 <div class="container">
-    <h1>تخصص جدید</h1>
-    <div>
+    <h1 class="page-title">تخصص جدید</h1>
+
+    <div class="message-container">
         {% if messages %}
         <ul class="messages">
             {% for message in messages %}
@@ -11,14 +17,16 @@
         </ul>
         {% endif %}
     </div>
-    <div>
+
+    <div class="form-container">
         <form method="post">
             {% csrf_token %}
             {{ forms.as_p }}
-            <button type="submit">تخصص جدید</button>
+            <button type="submit" class="submit-btn">تخصص جدید</button>
         </form>
     </div>
 </div>
+
 <script>
     // انتخاب پیام‌ها
     document.querySelectorAll('.messages li').forEach(function(message) {

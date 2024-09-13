@@ -1,7 +1,10 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: IRANSans, sans-serif;
+    font-size: 14px;
     margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
 }
 .container {
     max-width: 800px;
@@ -54,4 +57,19 @@ h1 {
 .actions {
     display: flex;
     gap: 10px; /* فاصله بین دکمه‌ها */
+}
+
+.button-exit {
+    background-color: crimson;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.button-exit:hover {
+    background-color: darkred;
 }

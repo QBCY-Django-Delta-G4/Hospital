@@ -65,6 +65,7 @@ def create_patient(request):
         form = PatientForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, 'ثبت شد')
             return redirect('login')
     else:
         form = PatientForm()
@@ -81,7 +82,7 @@ def create_availabletime(request:HttpRequest,id):
         end_time = request.POST.get('end_time')
 
         AvailableTime.objects.create(date=date,start_time=start_time,end_time=end_time,doctor=doctor)
-
+        messages.success(request, 'ثبت شد')
         return redirect("availabletime_doctor", id=id)
     return render(request, "Create_AvailableTime.html", {'doctor':doctor})
 
@@ -95,6 +96,7 @@ def edit_availabletime(request:HttpRequest,id):
         availabletime.start_time = request.POST.get('start_time')
         availabletime.end_time = request.POST.get('end_time')
         availabletime.save()
+        messages.success(request, 'ثبت شد')
         return redirect("availabletime_doctor", id=availabletime.doctor.id)
     return render(request, "edit_availabletime.html", {"availabletime": availabletime})
 
@@ -104,6 +106,7 @@ def edit_availabletime(request:HttpRequest,id):
 def delete_availabletime(request:HttpRequest,id):
     availabletime = AvailableTime.objects.get(pk=id)
     availabletime.delete()
+    messages.success(request, 'حذف شد')
     return redirect("availabletime_doctor", id=availabletime.doctor.id)
 
 
@@ -133,6 +136,7 @@ def delete_doctor(request, id):
     doctor = Doctor.objects.get(id=id)
     doctor.is_deleted = True
     doctor.save()
+    messages.success(request, 'حذف شد')
     return redirect("viewdoctor")
 
 
@@ -144,6 +148,7 @@ def edit_doctor(request, id):
         form = DoctorForm(request.POST, instance=doctor)
         if form.is_valid():
             form.save()
+            messages.success(request, 'ثبت شد')
             return redirect('viewdoctor')
     else:
         form = DoctorForm(instance=doctor)
@@ -231,6 +236,7 @@ def patient_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            messages.success(request, 'وارد شدید')
             return redirect('home')
     else:
         form = LoginAsPatient()
@@ -263,6 +269,7 @@ def home(request):
 @login_required(login_url='login')
 def patient_logout(request):
     logout(request)
+    messages.success(request, 'خارج شدید')
     return redirect('home')
 
 
@@ -295,7 +302,7 @@ def patient_reservation(request,id):
             )
 
 
-
+    messages.success(request, 'ثبت شد')
     return redirect("availabletime_doctor",id=availabletime.doctor.id)
 
 
@@ -308,6 +315,7 @@ def patient_add_balance(request):
             balance = form.cleaned_data["balance"]
             patient.balance = patient.balance + balance
             patient.save()
+            messages.success(request, 'اضافه شد')
             return redirect('home')
     else:
         form = PatientAddBalanceForm()
@@ -315,7 +323,7 @@ def patient_add_balance(request):
 
 
 @login_required(login_url='login')
-def patient_delete_reserve_time(request,id):
+def patient_delete_reserve_time(request:HttpRequest,id,r):
     availabletime = get_object_or_404(AvailableTime,id=id)
     patient = get_object_or_404(Patient,user=request.user)
 
@@ -327,8 +335,12 @@ def patient_delete_reserve_time(request,id):
         patient_balance = patient.balance
         patient.balance = patient_balance + cost
         patient.save()
+        messages.success(request, 'حذف شد')
 
-    return redirect('patient_reserved_times')
+    if r == 1:
+        return redirect('patient_reserved_times')
+    elif r == 2:
+        return redirect('availabletime_doctor',availabletime.doctor.id)
 
 
 @login_required(login_url='login')
@@ -339,9 +351,11 @@ def patient_reserved_times(request):
     context = {"availabletimes":availabletimes,}
     return render(request,"patient_reserved_times.html",context=context)
 
+
 @login_required(login_url='login')
 def patient_profile(request):
-    patient, created = Patient.objects.get_or_create(user=request.user)
+    patient = get_object_or_404(Patient,user=request.user)
+    # patient, created = Patient.objects.get_or_create(user=request.user)
     return render(request, 'patient_profile.html', {'patient': patient})
 
 
