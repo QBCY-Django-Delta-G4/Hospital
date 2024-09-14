@@ -146,3 +146,27 @@ def patient_reserved_times(request:HttpRequest):
 def patient_profile(request:HttpRequest):
     patient = get_object_or_404(Patient,user=request.user)
     return render(request, 'patient/patient_profile.html', {'patient': patient})
+
+
+@login_required(login_url='login')
+def edit_patient_profile(request):
+    user = request.user  
+    patient = request.user.patient  
+    if request.method == 'POST':
+        user_form = EditUserForm(request.POST, instance=user)
+        patient_form = EditPatientForm(request.POST, instance=patient)
+
+        if user_form.is_valid() and patient_form.is_valid():
+            user_form.save()
+            patient_form.save()
+            messages.success(request, 'پروفایل با موفقیت به‌روزرسانی شد.')
+            return redirect('patient_profile')
+    else:
+        user_form = EditUserForm(instance=user)
+        patient_form = EditPatientForm(instance=patient)
+
+    return render(request, 'patient/edit_patient_profile.html', {
+        'user_form': user_form,
+        'patient_form': patient_form,
+        'patient': patient,
+    })

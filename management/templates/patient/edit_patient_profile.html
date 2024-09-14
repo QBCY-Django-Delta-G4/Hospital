@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پروفایل بیمار</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px;">
+
+    <header style="background-color: #007bff; color: white; padding: 15px 0; text-align: center;">
+        <h1 style="margin: 0;">پروفایل بیمار</h1>
+    </header>
+
+    <main style="max-width: 800px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <h2 style="margin-bottom: 20px;">
+                <label><strong>نام:</strong></label>
+                {{ user_form.first_name }}
+            </h2>
+
+            <div style="margin-bottom: 20px;">
+                <label><strong>نام خانوادگی:</strong></label>
+                {{ user_form.last_name }}
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label><strong>ایمیل:</strong></label>
+                {{ user_form.email }}
+            </div>
+
+
+            <div style="margin-bottom: 20px;">
+                <label><strong>شماره تلفن:</strong></label>
+                {{ patient_form.phone }}
+            </div>
+
+            <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                به‌روزرسانی پروفایل
+            </button>
+        </form>
+
+
+    </main>
+
+
+
+</body>
+</html>
+{% endblock %}
