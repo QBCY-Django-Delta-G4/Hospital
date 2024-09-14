@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Q
 from datetime import date
+from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 
 
 
@@ -25,10 +26,25 @@ def availabletime_doctor(request:HttpRequest,id):
         availabletimes = availabletimes.filter(Q(patient=None)|Q(patient=patient))
         availabletimes = availabletimes.filter(Q(date__gte=today))
 
+    paginator = Paginator(availabletimes,5)
+    get_page  = request.GET.get('page')
+    try:
+        availabletimes = paginator.page(get_page)
+    except PageNotAnInteger:
+        availabletimes = paginator.page(1)
+    except EmptyPage:
+        availabletimes = paginator.page(paginator.num_pages)
+
+    try:
+        page_i = int(get_page)
+    except:
+        page_i = 1
+
     context = {
         "is_admin":is_admin,
         "doctor":doctor,
-        "availabletimes":availabletimes
+        "availabletimes":availabletimes,
+        "page_i":page_i
     }
     return render(request,"av_time/availabletime_doctor.html",context=context)
 
