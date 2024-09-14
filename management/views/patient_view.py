@@ -8,6 +8,8 @@ from django.core.mail import send_mail
 from django.db.models import Q, Value
 from django.db.models.functions import Concat
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import logout
 
 
 
@@ -188,3 +190,21 @@ def edit_patient_profile(request):
     })
 
 
+@login_required(login_url='login')
+def change_password(request:HttpRequest):
+    if request.method == 'POST':
+        form = ChangePasswordForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data.get("new_password")
+            request.user.set_password(new_password)
+            request.user.save()
+            update_session_auth_hash(request, request.user)
+            messages.success(request, "پسورد عوض شد!")
+            logout(request)
+            return redirect('login')
+        else:
+            messages.error(request, "مشکلی در تغییر پسورد پیش اومد. دوباره تلاش کنید.")
+    else:
+        form = ChangePasswordForm(user=request.user)
+
+    return render(request, 'patient/change_password.html', {'form': form})

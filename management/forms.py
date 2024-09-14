@@ -111,8 +111,29 @@ class AvailableTimeForm(forms.ModelForm):
         model = AvailableTime
         exclude = ["patient","doctor"]
 
+class ChangePasswordForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput, required=True, label='پسورد اکانت')
+    new_password = forms.CharField(widget=forms.PasswordInput, required=True, label='پسورد جدید')
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput, required=True, label='تکرار پسورد جدید')
 
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
 
+    def clean_password(self):
+        password = self.cleaned_data.get("password")
+        if not self.user.check_password(password):
+            raise forms.ValidationError("پسورد غلط است.")
+        return password
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        confirm_new_password = cleaned_data.get("confirm_new_password")
+        if new_password and confirm_new_password:
+            if new_password != confirm_new_password:
+                raise forms.ValidationError("پسوردهای جدید یکی نیست!")
+        return cleaned_data
 
 class RatingForm(forms.ModelForm):
     class Meta:

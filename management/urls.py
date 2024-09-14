@@ -30,7 +30,7 @@ urlpatterns = [
     path('delete-comment/<int:doctor_id>/<int:comment_id>/', delete_comment, name='delete_comment'),
     # path('doctor/add_rating/<int:doctor_id>/', add_rating, name='add_rating'),
     path('edit_patient_profile', edit_patient_profile,name='edit_patient_profile'),
-
+    path('change_password/', change_password, name='change_password'),
     
 
 ]
