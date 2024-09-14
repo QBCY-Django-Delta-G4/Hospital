@@ -42,7 +42,7 @@ def create_patient(request):
         form = PatientForm(request.POST)
         if form.is_valid():
             form.save()
-            msg = f'بیمار {forms.cleaned_data["first_name"]} {forms.cleaned_data["last_name"]} اضافه شد.'
+            msg = f'بیمار {form.cleaned_data["first_name"]} {form.cleaned_data["last_name"]} اضافه شد.'
             messages.success(request, msg)
             return redirect('login')
     else:

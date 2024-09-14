@@ -130,20 +130,23 @@ class ForgotPasswordForm(forms.Form):
 class ResetPasswordForm(forms.Form):
     code = forms.CharField(max_length=6)
     new_password = forms.CharField(widget=forms.PasswordInput)
-    
+
 class EditUserForm(forms.ModelForm):
+    first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
-        widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-        }
+        
+
 
 
 
 class EditPatientForm(forms.ModelForm):
+    phone = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+
     class Meta:
         model = Patient
         fields = ['phone']
