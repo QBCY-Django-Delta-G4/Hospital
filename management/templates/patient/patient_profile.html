@@ -1,44 +1,51 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load patient_tags %}
+
 {% block content %}
+<body>
+    {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/detail_doctor.css' %}">
+    {% endblock %}
+    <div class="message-container">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}" id="message-{{ forloop.counter }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
 
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پروفایل بیمار</title>
-</head>
-<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px;">
+    <div class="doctor-profile">
+        <div class="header">
+            <h1 class="doctor-name">{{ patient.user.first_name }} {{ patient.user.last_name }}</h1>
+            <p class="specialization"><strong>نام کاربری:</strong> {{ patient.user.username }}</p>
+        </div>
 
-    <header style="background-color: #007bff; color: white; padding: 15px 0; text-align: center;">
-        <h1 style="margin: 0;">پروفایل بیمار</h1>
-    </header>
+        <div class="contact-info">
+            <p><strong>ایمیل:</strong> {{ patient.user.email }}</p>
+            <p><strong>شماره تلفن:</strong> {{ patient.phone }}</p>
+            <p><strong>موجودی:</strong> {{ patient.balance }} </p>
+        </div>
 
-    <main style="max-width: 800px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
         
+        <a href="{% url 'forgot_password' %}" class="button">تغییر رمز عبور</a>
+        <a href="{% url 'edit_patient_profile' %}" class="button">ویرایش پروفایل</a>
+        <a href="{% url 'logout' %}" class="button-exit" style="padding: 10px 15px;" >خروج</a>
 
-        <h2><strong>نام کاربری: </strong> {{ patient.user.username }}</h2>
-        <h2><strong>نام: </strong> {{ patient.user.first_name }}</h2>
-        <h2><strong>نام خانوادگی: </strong>{{ patient.user.last_name }}</h2>
-        <h2><strong>ایمیل: </strong> {{ patient.user.email }}</h2>
-        <h2><strong>موجودی: </strong> {{ patient.balance }}</h2>
-        <h2><strong>شماره تلفن: </strong> {{ patient.phone }}</h2>
-
-        <a href="{% url 'logout' %}" 
-           style="display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: #dc3545; text-align: center; text-decoration: none; border-radius: 5px; border: 1px solid #dc3545; cursor: pointer;">
-           خروج
-        </a>
-
-        <a href="{% url 'patient_profile' %}" 
-           style="display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: #007bff; text-align: center; text-decoration: none; border-radius: 5px; border: 1px solid #007bff; cursor: pointer; margin-left: 10px;">
-            تغییر رمز عبور
-        </a>
-        <a href="{% url 'edit_patient_profile' %}" 
-        style="display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: #007bff; text-align: center; text-decoration: none; border-radius: 5px; border: 1px solid #007bff; cursor: pointer; margin-left: 10px;">
-    ویرایش پروفایل
-                     </a>
-    </main>
-
+    </div>
 </body>
-</html>
+
+<script>
+    document.querySelectorAll('.messages li').forEach(function(message) {
+        setTimeout(function() {
+            message.style.opacity = '0';
+            setTimeout(function() {
+                message.remove();
+            }, 1000);
+        }, 3000);
+    });
+</script>
 {% endblock %}
+

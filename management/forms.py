@@ -3,6 +3,8 @@ from .models import *
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 import re
+from django.core.exceptions import ValidationError
+
 
 
 class DoctorForm(forms.ModelForm):
@@ -63,7 +65,19 @@ class PatientForm(forms.ModelForm):
         model = Patient
         fields = ['username', 'first_name', 'last_name', 'email', 'password', 'phone']
 
+
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        patients = Patient.objects.filter(user__email=email)
+        if patients:
+            raise forms.ValidationError('این ایمیل قبلا ثبت شده است')
+
+        return email
+
+
     def save(self, commit=True):
+
         user = User(
             username=self.cleaned_data['username'],
             first_name=self.cleaned_data['first_name'],

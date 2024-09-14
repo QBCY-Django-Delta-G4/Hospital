@@ -18,7 +18,7 @@ def create_doctor(request:HttpRequest):
     if request.method == 'POST':
         forms = DoctorForm(request.POST)
         if not forms.is_valid():
-            return render(request, 'create_doctor.html', {'forms': forms})
+            return render(request, 'doctor/create_doctor.html', {'forms': forms})
         else:
             forms.save()
             msg = f'دکتر {forms.cleaned_data["first_name"]} {forms.cleaned_data["last_name"]} اضافه شد.'

@@ -39,7 +39,7 @@ def forgot_password_view(request:HttpRequest):
             except User.DoesNotExist:
                 messages.error(request, 'کاربری با این ایمیل یافت نشد.')
                 return redirect('forgot_password')
-            
+
             reset_code = PasswordResetCode.objects.create(user=user)
             request.session['reset_user_id'] = user.id
             # send email
@@ -47,7 +47,7 @@ def forgot_password_view(request:HttpRequest):
             message = f'کد تایید شما: {reset_code.code}\n نام کاربری شما: {user.username}'
             from_mail = "test_mail@django.com"
             recipient_list = [user.email]
-            
+
             send_mail(
                 subject,
                 message,
@@ -55,12 +55,12 @@ def forgot_password_view(request:HttpRequest):
                 recipient_list,
                 fail_silently=False,
             )
-            
+
             messages.success(request, 'کد تأیید به ایمیل شما ارسال شد.')
             return redirect('reset_password')
     else:
         form = ForgotPasswordForm()
-    return render(request, 'forgot_password.html', {'form': form})
+    return render(request, 'login/forgot_password.html', {'form': form})
 
 
 
@@ -93,7 +93,7 @@ def reset_password_view(request:HttpRequest):
     else:
         form = ResetPasswordForm()
 
-    return render(request, 'reset_password.html', {'form': form})
+    return render(request, 'login/reset_password.html', {'form': form})
 
 
 

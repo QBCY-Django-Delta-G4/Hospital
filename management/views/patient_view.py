@@ -186,3 +186,5 @@ def edit_patient_profile(request):
         'patient_form': patient_form,
         'patient': patient,
     })
+
+
