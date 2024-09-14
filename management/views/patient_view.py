@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.db.models import Q, Value
 from django.db.models.functions import Concat
+from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 
 
 
@@ -137,7 +138,22 @@ def patient_reserved_times(request:HttpRequest):
     patient = get_object_or_404(Patient,user=request.user)
     availabletimes = AvailableTime.objects.filter(patient=patient).order_by('-date')
 
-    context = {"availabletimes":availabletimes,}
+    paginator = Paginator(availabletimes,5)
+    get_page  = request.GET.get('page')
+    try:
+        availabletimes = paginator.page(get_page)
+    except PageNotAnInteger:
+        availabletimes = paginator.page(1)
+    except EmptyPage:
+        availabletimes = paginator.page(paginator.num_pages)
+
+    try:
+        page_i = int(get_page)
+    except:
+        page_i = 1
+
+
+    context = {"availabletimes":availabletimes,'page_i':page_i}
     return render(request,"patient/patient_reserved_times.html",context=context)
 
 

@@ -49,18 +49,19 @@
 
 
         <div class="comments-section">
-            <div class="rating-section">
-                {% if score %}
-                    <p>امتیاز شما به این دکتر: {{ score }} از 5</p>
-                {% else %}
-                    <form method="post" class="rating-form" >
-                        {% csrf_token %}
-                        {{ rating_form.as_p }}
-                        <input name="btn-submit" type="submit" class="rating-button" value="ثبت امتیاز">
-                    </form>
-                {% endif %}
-            </div>
-
+            {% if not request.user.is_staff %}
+                <div class="rating-section">
+                    {% if score %}
+                        <p>امتیاز شما به این دکتر: {{ score }} از 5</p>
+                    {% else %}
+                        <form method="post" class="rating-form" >
+                            {% csrf_token %}
+                            {{ rating_form.as_p }}
+                            <input name="btn-submit" type="submit" class="rating-button" value="ثبت امتیاز">
+                        </form>
+                    {% endif %}
+                </div>
+            {% endif %}
 
             {% with page_obj.paginator.count as total_comments %}
                 <h2>تعداد نظرات: {{ total_comments }}</h2>
