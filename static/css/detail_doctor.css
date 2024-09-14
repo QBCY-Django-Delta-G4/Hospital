@@ -57,7 +57,6 @@
 .visit-cost a:hover {
     background-color: #2980b9; /* تغییر رنگ هنگام هاور */
 }
-    /* استایل برای بخش نظرات */
 .comments-section {
     margin-top: 30px;
     padding: 20px;
@@ -87,8 +86,15 @@
 }
 
 .comment .comment-author {
+    font-size: 16px;
     font-weight: bold;
     color: #007bff;
+}
+
+.comment .comment-score {
+    padding-top: 3px;
+    font-size: 12px;
+    color: #1f78d7;
 }
 
 .comment .comment-date {
@@ -122,6 +128,40 @@
     background-color: #0056b3;
 }
 
+/* Ensure the .comment container is positioned correctly */
+.comment {
+    position: relative;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+/* Position the rating form container */
+.rating-form-container {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: #f1f1f1;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+/* Style the submit button */
+.rating-button {
+    background-color: #fa8072; /* Salmon color */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 45px;
+}
+
+.rating-button:hover {
+    background-color: #e07b6d; /* Slightly darker salmon color on hover */
+}
 
 
 
@@ -155,4 +195,21 @@
 .messages li.error {
     background-color: #e74c3c;
     color: white;
+}
+
+
+
+.button-exit {
+    background-color: crimson;
+    color: white;
+    border: none;
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.button-exit:hover {
+    background-color: darkred;
 }

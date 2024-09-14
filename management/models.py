@@ -24,7 +24,7 @@ class Doctor(models.Model):
     is_deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
     def __str__(self) -> str:
-        return self.first_name
+        return f"{self.first_name} {self.last_name}"
 
 
 class AvailableTime(models.Model):
@@ -34,11 +34,8 @@ class AvailableTime(models.Model):
     end_time = models.TimeField()
     patient = models.ForeignKey("Patient", on_delete=models.PROTECT, null=True, blank=True)
 
-    class Meta:
-        permissions = [
-            ("admin_available_time", "Can add-edit-remove available time"),
-            ("patient_available_time", "Can view available time"),
-        ]
+    def __str__(self) -> str:
+        return f"{self.doctor.first_name} {self.doctor.last_name}"
 
 
 class Comment(models.Model):
@@ -49,19 +46,25 @@ class Comment(models.Model):
     updated = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
     is_visited = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.description}"
+        return f"{self.patient.first_name} to {self.doctor.first_name}"
 
 
 class Rating(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
     patient = models.ForeignKey("Patient", on_delete=models.CASCADE, blank=True, null=True)
     score = models.PositiveIntegerField(
         validators=[
             MinValueValidator(1),
             MaxValueValidator(5)
         ]
+        ,default=0
     )
+
+    def __str__(self):
+        return f"{self.doctor.first_name} - {self.score}"
 
 
 class Patient(models.Model):
