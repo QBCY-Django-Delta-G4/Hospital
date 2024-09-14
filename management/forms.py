@@ -74,6 +74,16 @@ class PatientForm(forms.ModelForm):
             raise forms.ValidationError('این ایمیل قبلا ثبت شده است')
 
         return email
+    
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        patients = Patient.objects.filter(user__username=username)
+        if patients:
+            raise forms.ValidationError("این نام کاربری از قبل ثبت شده است")
+
+        return username
+    
 
 
     def save(self, commit=True):
