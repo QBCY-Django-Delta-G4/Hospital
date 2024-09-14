@@ -93,7 +93,13 @@ class AvailableTimeForm(forms.ModelForm):
 class RatingForm(forms.ModelForm):
     class Meta:
         model = Rating
-        fields = ["score"]
+        fields = ['score']
+        widgets = {
+            'score': forms.NumberInput(attrs={'min': 1, 'max': 5}),
+        }
+        labels = {
+            'description': 'امتیاز'
+        }
 
 
 class CommentForm(forms.ModelForm):

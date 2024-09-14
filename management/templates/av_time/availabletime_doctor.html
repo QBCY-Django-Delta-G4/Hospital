@@ -63,16 +63,17 @@
         {% endif %}
     </div>
     
-    <script>
-        // انتخاب پیام‌ها
-        document.querySelectorAll('.messages li').forEach(function(message) {
-            // ناپدید شدن پیام‌ها بعد از ۳ ثانیه
+    
+<script>
+    // انتخاب پیام‌ها
+    document.querySelectorAll('.messages li').forEach(function(message) {
+        // ناپدید شدن پیام‌ها بعد از ۳ ثانیه
+        setTimeout(function() {
+            message.style.opacity = '0'; // به تدریج ناپدید می‌شود
             setTimeout(function() {
-                message.style.opacity = '0'; // به تدریج ناپدید می‌شود
-                setTimeout(function() {
-                    message.remove(); // حذف کامل پیام از DOM
-                }, 1000); // زمان تطابق با transition
-            }, 3000); // 3 ثانیه برای نمایش
-        });
-    </script>
+                message.remove(); // حذف کامل پیام از DOM
+            }, 1000); // زمان تطابق با transition
+        }, 5000); // 3 ثانیه برای نمایش
+    });
+</script>
 {% endblock %}

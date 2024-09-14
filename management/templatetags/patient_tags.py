@@ -27,3 +27,12 @@ def datetime_format(date):
 def patient_balance(user:User):
     patient = get_object_or_404(Patient,user=user)
     return patient.balance
+
+@register.simple_tag
+def get_patient_score(patient,doctor_id):
+    try:
+        score = Rating.objects.get(doctor__id=doctor_id,patient=patient)
+        return score.score
+    except:
+        return "-"
+
