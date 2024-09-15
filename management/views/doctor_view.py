@@ -8,17 +8,13 @@ from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator
 
 
-
-
-
-
 @login_required(login_url='login')
 @permission_required('management.add_doctor', raise_exception=True)
 def create_doctor(request:HttpRequest):
     if request.method == 'POST':
-        forms = DoctorForm(request.POST)
+        forms = DoctorForm(request.POST, request.FILES)
         if not forms.is_valid():
-            return render(request, 'create_doctor.html', {'forms': forms})
+            return render(request, 'doctor/create_doctor.html', {'forms': forms})
         else:
             forms.save()
             msg = f'دکتر {forms.cleaned_data["first_name"]} {forms.cleaned_data["last_name"]} اضافه شد.'
@@ -28,7 +24,6 @@ def create_doctor(request:HttpRequest):
         forms = DoctorForm()
 
     return render(request, 'doctor/create_doctor.html', {'forms': forms})
-
 
 
 @login_required(login_url='login')
@@ -78,7 +73,7 @@ def delete_doctor(request:HttpRequest, id):
 def edit_doctor(request:HttpRequest, id):
     doctor = Doctor.objects.get(pk=id)
     if request.method == "POST":
-        form = DoctorForm(request.POST, instance=doctor)
+        form = DoctorForm(request.POST, request.FILES, instance=doctor)
         if form.is_valid():
             form.save()
             msg = f'دکتر {doctor.first_name} {doctor.last_name} ویرایش شد.'
@@ -147,7 +142,7 @@ def detail_doctor(request:HttpRequest, id):
         'comment_form': comment_form,
         'rating_form': rating_form,
         'is_admin': request.user.is_staff,
-        'score' : score
+        'score' : score,
     }
     return render(request, 'doctor/detail_doctor.html', context)
 

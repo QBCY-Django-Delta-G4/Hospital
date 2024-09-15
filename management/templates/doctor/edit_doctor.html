@@ -18,7 +18,7 @@
         </div>
 
         <div class="form-container">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ forms.as_p }}
                 <button type="submit" class="submit-btn">ویرایش دکتر</button>

@@ -6,7 +6,7 @@ import random
 
 
 class Specialization(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, null=True, verbose_name='ایجاد تخصص جدید')
     def __str__(self) -> str:
         return self.title
 
@@ -14,7 +14,8 @@ class Specialization(models.Model):
 class Doctor(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    specializations = models.ForeignKey(Specialization, on_delete=models.PROTECT, verbose_name='تخصص')
+    image = models.ImageField(null=True, blank=True, upload_to='media/%Y-%m-%d', default='media/empty.jpg', verbose_name='بارگذاری تصویر')
+    specializations = models.ForeignKey(Specialization, on_delete=models.PROTECT, verbose_name='تخصص', null=True)
     phone = models.CharField(max_length=15)
     clinic_address = models.TextField(verbose_name='آدرس مطب')
     license_number = models.CharField(max_length=11)
@@ -49,7 +50,7 @@ class Comment(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.patient.first_name} to {self.doctor.first_name}"
+        return f"{self.patient.user.first_name} to {self.doctor.first_name}"
 
 
 class Rating(models.Model):

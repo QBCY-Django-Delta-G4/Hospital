@@ -6,13 +6,17 @@ import re
 
 
 class DoctorForm(forms.ModelForm):
+    image = forms.ImageField(widget=forms.ClearableFileInput(attrs={'class': 'form-control'}), label='بارگذاری تصویر')
     class Meta:
         model = Doctor
         fields = ['first_name', 'last_name',
-                  'specializations', 'phone',
+                  'specializations','image', 'phone',
                   'clinic_address', 'license_number',
                   'biography','visit_cost','is_active',
                  ]
+        label = {
+            'is_active': 'پزشک فعال است'
+        }
 
     first_name = forms.CharField(label='نام دکتر')
     last_name = forms.CharField(label='نام خانوادگی')

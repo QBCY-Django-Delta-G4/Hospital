@@ -20,7 +20,7 @@
     
     {% for doctor in doctors %}
         <a href="{% url 'detail_doctor' doctor.id %}" class="doctor-card" style="text-decoration:none">
-            <img alt="{{ doctor.first_name }}" class="doctor-image" height="50" src="/media/{{ doctor.image }}"
+            <img alt="{{ doctor.first_name }}" class="doctor-image" height="50" src="{{ doctor.image.url }}"
                  width="50">
             <span class="doctor-name">{{ doctor.first_name }} {{ doctor.last_name }} - {{doctor.specializations.title}}</span>
         </a>
