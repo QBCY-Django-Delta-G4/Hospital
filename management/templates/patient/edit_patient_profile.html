@@ -1,55 +1,48 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
+    {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/edit_doctor.css' %}">
+    {% endblock %}
+    <div class="container">
+        <h1 class="page-title">ویرایش بیمار</h1>
 
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پروفایل بیمار</title>
-</head>
-<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px;">
+        <div class="message-container">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}" id="message-{{ forloop.counter }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
 
-    <header style="background-color: #007bff; color: white; padding: 15px 0; text-align: center;">
-        <h1 style="margin: 0;">پروفایل بیمار</h1>
-    </header>
-
-    <main style="max-width: 800px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-
-        <form method="POST">
-            {% csrf_token %}
-
-            <h2 style="margin-bottom: 20px;">
-                <label><strong>نام:</strong></label>
+        <div class="form-container">
+            <form method="post">
+                {% csrf_token %}
+                <p>نام</p>
                 {{ user_form.first_name }}
-            </h2>
-
-            <div style="margin-bottom: 20px;">
-                <label><strong>نام خانوادگی:</strong></label>
+                <p>نام خانوادگی</p>
                 {{ user_form.last_name }}
-            </div>
-
-            <div style="margin-bottom: 20px;">
-                <label><strong>ایمیل:</strong></label>
+                <p>ایمیل</p>
                 {{ user_form.email }}
-            </div>
-
-
-            <div style="margin-bottom: 20px;">
-                <label><strong>شماره تلفن:</strong></label>
+                <p>شماره موبایل</p>
                 {{ patient_form.phone }}
-            </div>
 
-            <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                به‌روزرسانی پروفایل
-            </button>
-        </form>
+                <br>
+                <button type="submit" class="submit-btn">ویرایش بیمار</button>
+            </form>
+        </div>
+    </div>
 
-
-    </main>
-
-
-
-</body>
-</html>
+    <script>
+        document.querySelectorAll('.messages li').forEach(function(message) {
+            setTimeout(function() {
+                message.style.opacity = '0'; // به تدریج ناپدید می‌شود
+                setTimeout(function() {
+                    message.remove(); // حذف کامل پیام از DOM
+                }, 1000); // زمان تطابق با transition
+            }, 3000); // 3 ثانیه برای نمایش
+        });
+    </script>
 {% endblock %}

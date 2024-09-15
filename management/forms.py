@@ -3,6 +3,8 @@ from .models import *
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 import re
+from django.core.exceptions import ValidationError
+
 
 
 class DoctorForm(forms.ModelForm):
@@ -67,7 +69,29 @@ class PatientForm(forms.ModelForm):
         model = Patient
         fields = ['username', 'first_name', 'last_name', 'email', 'password', 'phone']
 
+
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        patients = Patient.objects.filter(user__email=email)
+        if patients:
+            raise forms.ValidationError('این ایمیل قبلا ثبت شده است')
+
+        return email
+    
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        patients = Patient.objects.filter(user__username=username)
+        if patients:
+            raise forms.ValidationError("این نام کاربری از قبل ثبت شده است")
+
+        return username
+    
+
+
     def save(self, commit=True):
+
         user = User(
             username=self.cleaned_data['username'],
             first_name=self.cleaned_data['first_name'],
@@ -91,8 +115,29 @@ class AvailableTimeForm(forms.ModelForm):
         model = AvailableTime
         exclude = ["patient","doctor"]
 
+class ChangePasswordForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput, required=True, label='پسورد اکانت')
+    new_password = forms.CharField(widget=forms.PasswordInput, required=True, label='پسورد جدید')
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput, required=True, label='تکرار پسورد جدید')
 
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
 
+    def clean_password(self):
+        password = self.cleaned_data.get("password")
+        if not self.user.check_password(password):
+            raise forms.ValidationError("پسورد غلط است.")
+        return password
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        confirm_new_password = cleaned_data.get("confirm_new_password")
+        if new_password and confirm_new_password:
+            if new_password != confirm_new_password:
+                raise forms.ValidationError("پسوردهای جدید یکی نیست!")
+        return cleaned_data
 
 class RatingForm(forms.ModelForm):
     class Meta:
