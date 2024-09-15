@@ -49,7 +49,7 @@ class Comment(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.patient.first_name} to {self.doctor.first_name}"
+        return f"{self.patient.user.username} to {self.doctor.first_name}"
 
 
 
