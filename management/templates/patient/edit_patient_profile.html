@@ -20,15 +20,8 @@
         <div class="form-container">
             <form method="post">
                 {% csrf_token %}
-                <p>نام</p>
-                {{ user_form.first_name }}
-                <p>نام خانوادگی</p>
-                {{ user_form.last_name }}
-                <p>ایمیل</p>
-                {{ user_form.email }}
-                <p>شماره موبایل</p>
-                {{ patient_form.phone }}
-
+                {{user_form.as_p}}
+                {{patient_form.as_p}}
                 <br>
                 <button type="submit" class="submit-btn">ویرایش بیمار</button>
             </form>

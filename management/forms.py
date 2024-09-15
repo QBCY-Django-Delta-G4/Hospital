@@ -7,6 +7,22 @@ from django.core.exceptions import ValidationError
 
 
 
+def check_name(name):
+    name_regex = r'^[\u0600-\u06FF\s]+$'
+    if not re.match(name_regex, name):
+        return False
+    return True
+
+def check_phone(phone):
+    phone_regex = r'^09[0-9]{9}$'
+    print(phone)
+    if not re.match(phone_regex, phone):
+        return False
+    return True
+
+
+
+
 class DoctorForm(forms.ModelForm):
     class Meta:
         model = Doctor
@@ -24,26 +40,20 @@ class DoctorForm(forms.ModelForm):
 
     def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')
-        first_name_regex = r'^[\u0600-\u06FF\s]+$'
-        if not re.match(first_name_regex, first_name):
+        if not check_name(first_name):
             raise forms.ValidationError('نام را با کاراکتر حروف بنویسید')
-
         return first_name
 
     def clean_last_name(self):
         last_name = self.cleaned_data.get('last_name')
-        last_name_regex = r'^[\u0600-\u06FF\s]+$'
-        if not re.match(last_name_regex, last_name):
+        if not check_name(last_name):
             raise forms.ValidationError('نام خانوادگی را با کاراکتر حروف بنویسید.')
-
         return last_name
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
-        phone_regex = r'^09[0-9]{9}$'
-        if not re.match(phone_regex, phone):
+        if not check_phone(phone):
             raise forms.ValidationError('لطفا شماره تماس را به درستی وارد نمایید.')
-
         return phone
 
 
@@ -66,6 +76,23 @@ class PatientForm(forms.ModelForm):
         fields = ['username', 'first_name', 'last_name', 'email', 'password', 'phone']
 
 
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get('first_name')
+        if not check_name(first_name):
+            raise forms.ValidationError('نام را با کاراکتر حروف بنویسید')
+        return first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get('last_name')
+        if not check_name(last_name):
+            raise forms.ValidationError('نام خانوادگی را با کاراکتر حروف بنویسید.')
+        return last_name
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if not check_phone(phone):
+            raise forms.ValidationError('لطفا شماره تماس را به درستی وارد نمایید.')
+        return phone
 
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -75,7 +102,6 @@ class PatientForm(forms.ModelForm):
 
         return email
     
-
     def clean_username(self):
         username = self.cleaned_data['username']
         patients = Patient.objects.filter(user__username=username)
@@ -83,18 +109,14 @@ class PatientForm(forms.ModelForm):
             raise forms.ValidationError("این نام کاربری از قبل ثبت شده است")
 
         return username
-    
-
 
     def save(self, commit=True):
-
         user = User(
             username=self.cleaned_data['username'],
             first_name=self.cleaned_data['first_name'],
             last_name=self.cleaned_data['last_name'],
             email=self.cleaned_data['email']
         )
-
         user.set_password(self.cleaned_data['password'])
         if commit:
             user.save()
@@ -105,11 +127,11 @@ class PatientForm(forms.ModelForm):
         return patient
 
 
-
 class AvailableTimeForm(forms.ModelForm):
     class Meta:
         model = AvailableTime
         exclude = ["patient","doctor"]
+
 
 class ChangePasswordForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput, required=True, label='پسورد اکانت')
@@ -135,6 +157,7 @@ class ChangePasswordForm(forms.Form):
                 raise forms.ValidationError("پسوردهای جدید یکی نیست!")
         return cleaned_data
 
+
 class RatingForm(forms.ModelForm):
     class Meta:
         model = Rating
@@ -159,39 +182,56 @@ class CommentForm(forms.ModelForm):
         }
 
 
-
 class LoginAsPatient(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Username'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
 
 
-
 class PatientAddBalanceForm(forms.Form):
     balance = forms.DecimalField(min_value=0.0)
 
+
 class ForgotPasswordForm(forms.Form):
     email = forms.EmailField()
+
 
 class ResetPasswordForm(forms.Form):
     code = forms.CharField(max_length=6)
     new_password = forms.CharField(widget=forms.PasswordInput)
 
+
 class EditUserForm(forms.ModelForm):
-    first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    last_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}), label='نام')
+    last_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}), label='نام خانوادگی')
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}), label='ایمیل')
+
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get('first_name')
+        if not check_name(first_name):
+            raise forms.ValidationError('نام را با کاراکتر حروف بنویسید')
+        return first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get('last_name')
+        if not check_name(last_name):
+            raise forms.ValidationError('نام خانوادگی را با کاراکتر حروف بنویسید.')
+        return last_name
+
 
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
         
 
-
-
-
 class EditPatientForm(forms.ModelForm):
-    phone = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    phone = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}),label='شماره تماس')
 
     class Meta:
         model = Patient
         fields = ['phone']
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if not check_phone(phone):
+            raise forms.ValidationError('لطفا شماره تماس را به درستی وارد نمایید.')
+        return phone

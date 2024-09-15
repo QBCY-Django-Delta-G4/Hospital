@@ -16,7 +16,7 @@ from django.contrib.auth import logout
 
 
 def home(request):
-    doctors = Doctor.objects.filter(is_deleted=False)
+    doctors = Doctor.objects.filter(is_deleted=False).order_by('-id')
     search_query = request.GET.get('q')
 
     if search_query:
