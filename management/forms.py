@@ -35,7 +35,7 @@ class DoctorForm(forms.ModelForm):
     first_name = forms.CharField(label='نام دکتر')
     last_name = forms.CharField(label='نام خانوادگی')
     phone = forms.CharField(label='شماره تماس')
-    license_number = forms.CharField(label='شماره نظام پزشکی')
+    license_number = forms.IntegerField(label='شماره نظام پزشکی')
     visit_cost = forms.DecimalField(label='هزینه ویزیت')
 
     def clean_first_name(self):
