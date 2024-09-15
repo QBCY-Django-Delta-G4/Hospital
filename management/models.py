@@ -53,6 +53,12 @@ class Comment(models.Model):
         return f"{self.patient.user.first_name} to {self.doctor.first_name}"
 
 
+
+def get_average_rating(doctor_id):
+    average_rating = Rating.objects.filter(doctor_id=doctor_id).aggregate(models.Avg('score'))
+    return average_rating['score__avg']
+
+
 class Rating(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
     patient = models.ForeignKey("Patient", on_delete=models.CASCADE, blank=True, null=True)

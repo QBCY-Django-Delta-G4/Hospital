@@ -28,7 +28,7 @@ def create_doctor(request:HttpRequest):
 
 @login_required(login_url='login')
 def view_doctor(request:HttpRequest):
-    doctors = Doctor.objects.filter(is_deleted=False)
+    doctors = Doctor.objects.filter(is_deleted=False).order_by('-id')
     context = {
         'doctors': doctors
     }
@@ -84,19 +84,22 @@ def edit_doctor(request:HttpRequest, id):
     return render(request, 'doctor/edit_doctor.html', {'forms': form})
 
 
-
 @login_required(login_url='login')
-def detail_doctor(request:HttpRequest, id):
+def detail_doctor(request: HttpRequest, id):
     doctor = get_object_or_404(Doctor, id=id)
     comments = doctor.comments.filter(is_deleted=False, active=True).order_by('-id')
 
     score = None
+    is_visited = False
     if request.user.is_staff:
         patient = None
     else:
         patient = Patient.objects.get(user=request.user)
+        reserved_tiems = AvailableTime.objects.filter(doctor=doctor, patient=patient)
+        if reserved_tiems:
+            is_visited = True
         try:
-            score = Rating.objects.get(doctor=doctor,patient=patient)
+            score = Rating.objects.get(doctor=doctor, patient=patient)
             score = score.score
         except:
             score = None
@@ -104,12 +107,13 @@ def detail_doctor(request:HttpRequest, id):
     if request.method == "POST":
         btn_submit = request.POST.get('btn-submit')
         if btn_submit == "ثبت امتیاز":
-            rating_form = RatingForm(data=request.POST)
-            if rating_form.is_valid():
-                rate = rating_form.save(commit=False)
-                rate.doctor = doctor
-                rate.patient = patient
-                rate.save()
+            rate = request.POST.get('rating')
+            if rate is not None:
+                try:
+                    Rating.objects.create(score=rate, doctor=doctor, patient=patient)
+                    messages.success(request, 'امتیاز شما با موفقیت ثبت شد.')
+                except:
+                    messages.error(request, 'امتیاز ثبت نشد.')
 
         elif btn_submit == "ثبت نظر":
             comment_form = CommentForm(data=request.POST)
@@ -126,12 +130,14 @@ def detail_doctor(request:HttpRequest, id):
         comment_form = CommentForm()
         rating_form = RatingForm()
 
-
     paginator = Paginator(comments, 6)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    
+    average_score = get_average_rating(id)
+    if average_score is None:
+        average_score = 0
+
     if score is None:
         score = 0
 
@@ -142,7 +148,9 @@ def detail_doctor(request:HttpRequest, id):
         'comment_form': comment_form,
         'rating_form': rating_form,
         'is_admin': request.user.is_staff,
-        'score' : score,
+        'score': score,
+        'average_score': average_score,
+        'is_visited': is_visited
     }
     return render(request, 'doctor/detail_doctor.html', context)
 

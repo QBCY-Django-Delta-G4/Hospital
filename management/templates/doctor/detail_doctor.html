@@ -20,6 +20,16 @@
     <div class="doctor-profile">
         <div class="header">
             <h1 class="doctor-name">{{ doctor.first_name }} {{ doctor.last_name }}</h1>
+
+            <div class="star-rating">
+                <p>امتیاز دکتر: 
+                    {% for i in "54321" %}
+                    <span class="{% if average_score and average_score|floatformat:0 >= i %}filled{% endif %}">★</span>
+                    {% endfor %}
+                    <span>({{average_score}})</span>
+                </p>
+            </div>
+
             <p class="specialization"><strong>تخصص:</strong> {{ doctor.specializations }}</p>
         </div>
 
@@ -52,14 +62,30 @@
             {% if not request.user.is_staff %}
                 <div class="rating-section">
                     {% if score %}
-                        <p>امتیاز شما به این دکتر: {{ score }} از 5</p>
-                    {% else %}
+                        <div class="star-rating">
+                        <p>امتیاز شما به این دکتر: 
+                            {% for i in "54321" %}
+                                <span class="{% if score|floatformat:0 >= i %}filled{% endif %}">★</span>
+                            {% endfor %}
+                            <span>({{score}})</span>
+                        </p>
+                        </div>
+                    {% elif is_visited %}
                         <form method="post" class="rating-form" >
                             {% csrf_token %}
-                            {{ rating_form.as_p }}
+                            <div class="star-rating">
+                            {% for i in "54321" %}
+                                <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}"/>
+                                <label for="star{{ i }}">★</label>
+                            {% endfor %}
+                            </div>
+    
                             <input name="btn-submit" type="submit" class="rating-button" value="ثبت امتیاز">
                         </form>
+                    {% else %}
+                        <h4>شما هنوز توسط این دکتر ویزیت نشده اید و نمی توانید امتیاز بدهید.</h4>
                     {% endif %}
+                    </div>
                 </div>
             {% endif %}
 
@@ -89,14 +115,18 @@
 
 
             <hr>
-            <h2>نظر خود را بنویسید</h2>
-            <div class="new-comment-form">
-                <form method="post">
-                    {% csrf_token %}
-                    {{ comment_form.as_p }}
-                    <input name="btn-submit" type="submit" value="ثبت نظر">
-                </form>
-            </div>
+            {% if is_visited or request.user.is_staff %}
+                <h2>نظر خود را بنویسید</h2>
+                <div class="new-comment-form">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ comment_form.as_p }}
+                        <input name="btn-submit" type="submit" value="ثبت نظر">
+                    </form>
+                </div>
+            {% else %}
+                <h4>شما هنوز توسط این دکتر ویزیت نشده اید و نمی توانید نظر جدیدی ثبت کنید.</h4>
+            {% endif %}
 
 
 

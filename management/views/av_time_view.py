@@ -6,8 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Q
-from datetime import date
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
+import datetime
 
 
 
@@ -22,7 +22,7 @@ def availabletime_doctor(request:HttpRequest,id):
         is_admin = True
     else: # is patient
         patient = get_object_or_404(Patient,user=request.user)
-        today = date.today()
+        today = datetime.date.today()
         availabletimes = availabletimes.filter(Q(patient=None)|Q(patient=patient))
         availabletimes = availabletimes.filter(Q(date__gte=today))
 
@@ -59,6 +59,17 @@ def create_availabletime(request:HttpRequest,id):
         start_time = request.POST.get('start_time')
         end_time = request.POST.get('end_time')
 
+        today = str(datetime.date.today())
+        if date < today:
+            msg = f'شما نمی توانید برای روزهای گذشته نوبت جدید ایجاد کنید.'
+            messages.error(request, msg)
+            return redirect('create_availabletime', id)            
+
+        if end_time <= start_time:
+            msg = f'لطفا ترتیب تایم نوبت را به درستی وارد کنید.'
+            messages.error(request, msg)
+            return redirect('create_availabletime', id)
+
         AvailableTime.objects.create(date=date,start_time=start_time,end_time=end_time,doctor=doctor)
         msg = f'نوبت خالی برای دکتر {doctor.first_name} {doctor.last_name} اضافه شد.'
         messages.success(request, msg)
@@ -72,11 +83,27 @@ def create_availabletime(request:HttpRequest,id):
 def edit_availabletime(request:HttpRequest,id):
     availabletime = AvailableTime.objects.get(pk=id)
     if request.method == "POST":
-        availabletime.date = request.POST.get('date')
-        availabletime.start_time = request.POST.get('start_time')
-        availabletime.end_time = request.POST.get('end_time')
+        date = request.POST.get('date')
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
+
+        today = str(datetime.date.today())
+        if date < today:
+            msg = f'شما نمی توانید برای روزهای گذشته نوبت جدید ایجاد کنید.'
+            messages.error(request, msg)
+            return redirect('edit_availabletime', id)            
+
+        if end_time <= start_time:
+            msg = f'لطفا ترتیب تایم نوبت را به درستی وارد کنید.'
+            messages.error(request, msg)
+            return redirect('edit_availabletime', id)
+        
+        availabletime.date = date
+        availabletime.start_time = start_time
+        availabletime.end_time = end_time
+
         availabletime.save()
-        msg = f'نوبت خالی برای دکتر {availabletime.doctor.first_name} {availabletime.doctor.last_name} اضافه شد.'
+        msg = f'نوبت خالی برای دکتر {availabletime.doctor.first_name} {availabletime.doctor.last_name} ویرایش شد.'
         messages.success(request, msg)
         return redirect("availabletime_doctor", id=availabletime.doctor.id)
     return render(request, "av_time/edit_availabletime.html", {"availabletime": availabletime})
