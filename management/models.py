@@ -17,7 +17,7 @@ class Doctor(models.Model):
     specializations = models.ForeignKey(Specialization, on_delete=models.PROTECT, verbose_name='تخصص')
     phone = models.CharField(max_length=15)
     clinic_address = models.TextField(verbose_name='آدرس مطب')
-    license_number = models.CharField(max_length=11)
+    license_number = models.IntegerField(verbose_name='کد نظام پزشکی', unique=True)
     biography = models.TextField(verbose_name='درباره دکتر')
     is_active = models.BooleanField(default=True)
     visit_cost = models.DecimalField(decimal_places=2, max_digits=8)
