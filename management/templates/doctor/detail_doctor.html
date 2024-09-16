@@ -21,6 +21,8 @@
     <div class="doctor-profile">
         <div class="header">
             <h1 class="doctor-name">{{ doctor.first_name }} {{ doctor.last_name }}</h1>
+            <img alt="{{ doctor.first_name }}" src="{{ doctor.image.url }}" width="250" height="300">
+            <br>
 
             <div class="star-rating">
                 <p>امتیاز دکتر: 

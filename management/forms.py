@@ -6,12 +6,12 @@ import re
 from django.core.exceptions import ValidationError
 
 
-
 def check_name(name):
     name_regex = r'^[\u0600-\u06FF\s]+$'
     if not re.match(name_regex, name):
         return False
     return True
+
 
 def check_phone(phone):
     phone_regex = r'^09[0-9]{9}$'
@@ -21,6 +21,17 @@ def check_phone(phone):
     return True
 
 
+def validate_jpg(value):
+    if not value.name.lower().endswith(('.jpg', 'jpeg')):
+        raise ValidationError('فقط فایل‌های با فرمت jpg مجاز هستند.')
+
+
+def validate_image_size(value):
+    max_size_mb = 2
+    max_size_bytes = max_size_mb * 1024 * 1024
+
+    if value.size > max_size_bytes:
+        raise ValidationError(f'حجم فایل نباید بیش از {max_size_mb} مگابایت باشد.')
 
 
 class DoctorForm(forms.ModelForm):
@@ -28,19 +39,23 @@ class DoctorForm(forms.ModelForm):
     class Meta:
         model = Doctor
         fields = ['first_name', 'last_name',
-                  'specializations','image', 'phone',
+                  'specializations', 'image', 'phone',
                   'clinic_address', 'license_number',
-                  'biography','visit_cost','is_active',
-                 ]
-        label = {
-            'is_active': 'پزشک فعال است'
-        }
+                  'biography', 'visit_cost', 'is_active',
+                  ]
 
     first_name = forms.CharField(label='نام دکتر')
     last_name = forms.CharField(label='نام خانوادگی')
     phone = forms.CharField(label='شماره تماس')
     license_number = forms.IntegerField(label='شماره نظام پزشکی')
     visit_cost = forms.DecimalField(label='هزینه ویزیت')
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+        if image:
+            validate_jpg(image)
+            validate_image_size(image)
+        return image
 
     def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')
@@ -79,7 +94,6 @@ class PatientForm(forms.ModelForm):
         model = Patient
         fields = ['username', 'first_name', 'last_name', 'email', 'password', 'phone']
 
-
     def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')
         if not check_name(first_name):
@@ -105,7 +119,7 @@ class PatientForm(forms.ModelForm):
             raise forms.ValidationError('این ایمیل قبلا ثبت شده است')
 
         return email
-    
+
     def clean_username(self):
         username = self.cleaned_data['username']
         patients = Patient.objects.filter(user__username=username)
@@ -134,7 +148,7 @@ class PatientForm(forms.ModelForm):
 class AvailableTimeForm(forms.ModelForm):
     class Meta:
         model = AvailableTime
-        exclude = ["patient","doctor"]
+        exclude = ["patient", "doctor"]
 
 
 class ChangePasswordForm(forms.Form):
@@ -206,7 +220,8 @@ class ResetPasswordForm(forms.Form):
 
 class EditUserForm(forms.ModelForm):
     first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}), label='نام')
-    last_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}), label='نام خانوادگی')
+    last_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}),
+                                label='نام خانوادگی')
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}), label='ایمیل')
 
     def clean_first_name(self):
@@ -221,14 +236,13 @@ class EditUserForm(forms.ModelForm):
             raise forms.ValidationError('نام خانوادگی را با کاراکتر حروف بنویسید.')
         return last_name
 
-
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
-        
+
 
 class EditPatientForm(forms.ModelForm):
-    phone = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}),label='شماره تماس')
+    phone = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}), label='شماره تماس')
 
     class Meta:
         model = Patient

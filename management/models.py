@@ -14,8 +14,8 @@ class Specialization(models.Model):
 class Doctor(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    image = models.ImageField(null=True, blank=True, upload_to='media/%Y-%m-%d', default='media/empty.jpg', verbose_name='بارگذاری تصویر')
-    specializations = models.ForeignKey(Specialization, on_delete=models.PROTECT, verbose_name='تخصص', null=True)
+    image = models.ImageField(null=True, blank=True, upload_to='%Y-%m-%d', default='empty.jpg', verbose_name='بارگذاری تصویر')
+    specializations = models.ForeignKey(Specialization, on_delete=models.PROTECT, verbose_name='تخصص')
     phone = models.CharField(max_length=15)
     clinic_address = models.TextField(verbose_name='آدرس مطب')
     license_number = models.IntegerField(verbose_name='کد نظام پزشکی', unique=True)
@@ -26,6 +26,10 @@ class Doctor(models.Model):
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
+
+    @property
+    def formatted_visit_cost(self):
+        return "{:,.0f} ریال".format(self.visit_cost)
 
 
 class AvailableTime(models.Model):
