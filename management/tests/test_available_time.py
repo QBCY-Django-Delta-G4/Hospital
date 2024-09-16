@@ -11,18 +11,24 @@ from django.contrib.contenttypes.models import ContentType
 
 class AvailableTimeTests(TestCase):
     def setUp(self):
-        specialize_heart = Specialization.objects.create(title="قلب")
-        specialize_ortopedia = Specialization.objects.create(title="ارتوپدی")
+        self.specialize_heart = Specialization.objects.create(title="قلب")
+        self.specialize_ortopedia = Specialization.objects.create(title="ارتوپدی")
+        self.specialize_eye = Specialization.objects.create(title="چشم")
 
-        doctor_heart = Doctor.objects.create(
-            first_name="علی", last_name="رضایی", specializations=specialize_heart,
+        self.doctor_heart = Doctor.objects.create(
+            first_name="علی", last_name="رضایی", specializations=self.specialize_heart,
             phone="09636365236", clinic_address="تهران", license_number="12365",
             biography="دکتر قلب مملکت", is_active=True, visit_cost=150000
             )
-        doctor_ortopedia = Doctor.objects.create(
-            first_name="مهدی", last_name="حسینی", specializations=specialize_ortopedia,
+        self.doctor_ortopedia = Doctor.objects.create(
+            first_name="مهدی", last_name="حسینی", specializations=self.specialize_ortopedia,
             phone="09644365236", clinic_address="تهران", license_number="55258",
-            biography="دکتر ارتوپد مملکت", is_active=False, visit_cost=105000
+            biography="دکتر ارتوپد مملکت", is_active=False, visit_cost=100000
+            )
+        self.doctor_eye = Doctor.objects.create(
+            first_name="یوسف", last_name="زمانی", specializations=self.specialize_eye,
+            phone="09644365214", clinic_address="تهران", license_number="14252",
+            biography="دکتر چشم مملکت", is_active=True, visit_cost=100000
             )
 
 
@@ -32,33 +38,90 @@ class AvailableTimeTests(TestCase):
         content_type = ContentType.objects.get_for_model(AvailableTime)
         permission = Permission.objects.get(codename='delete_availabletime', content_type=content_type)
         admin.user_permissions.add(permission)
+        self.admin = admin
 
         user_1 = User(username="Reza",first_name="رضا",last_name="حسنی",email="reza@gmail.com")
         user_1.set_password("12345")
         user_1.save()
+        self.user_1 = user_1
         user_2 = User(username="Hassan",first_name="حسن",last_name="رمضانی",email="hassan@gmail.com")
         user_2.set_password("5464")
         user_2.save()
+        self.user_2 = user_2
 
-        patient_1 = Patient.objects.create(user=user_1, phone="09542555555")
-        patient_2 = Patient.objects.create(user=user_2, phone="09534555555")
+        self.patient_1 = Patient.objects.create(user=user_1, phone="09542555555",balance=200000)
+        self.patient_2 = Patient.objects.create(user=user_2, phone="09534555555")
 
-        AvailableTime.objects.create(
-            doctor=doctor_heart, patient=patient_1, date=datetime.date(2024,9,18),
+        self.time_patient1_1 = AvailableTime.objects.create(
+            doctor=self.doctor_heart, patient=self.patient_1, date=datetime.date(2024,9,18),
             start_time=datetime.time(10,30), end_time=datetime.time(11,30)
         )
-        AvailableTime.objects.create(
-            doctor=doctor_heart, patient=patient_1, date=datetime.date(2024,9,19),
+        self.time_patient1_2 = AvailableTime.objects.create(
+            doctor=self.doctor_heart, patient=self.patient_1, date=datetime.date(2024,9,19),
             start_time=datetime.time(10,30), end_time=datetime.time(11,30)
         )
-        AvailableTime.objects.create(
-            doctor=doctor_ortopedia, patient=patient_2, date=datetime.date(2024,9,25),
+        self.time_patient2 = AvailableTime.objects.create(
+            doctor=self.doctor_ortopedia, patient=self.patient_2, date=datetime.date(2024,9,25),
+            start_time=datetime.time(8,30), end_time=datetime.time(10,00)
+        )
+        self.time_empty = AvailableTime.objects.create(
+            doctor=self.doctor_eye, date=datetime.date(2024,9,20),
             start_time=datetime.time(8,30), end_time=datetime.time(10,00)
         )
 
 
 
 #   View Tests
+    def test_availabletime_ok_reservation(self):
+        self.client.login(username="Reza", password="12345")
+
+        response = self.client.post(reverse('patient_reservation', args=[self.time_empty.id]))
+        self.time_empty.refresh_from_db()
+        self.patient_1.refresh_from_db()
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.time_empty.patient, self.patient_1)
+        self.assertEqual(self.patient_1.balance, 100000) # 200000(balance) - 100000(visit_cost)
+
+
+    def test_availabletime_fail_reservation(self):
+        self.client.login(username="Hassan", password="5464")
+        
+        response = self.client.post(reverse('patient_reservation', args=[self.time_empty.id]))
+        self.time_empty.refresh_from_db()
+        self.patient_2.refresh_from_db()
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIsNone(self.time_empty.patient)
+        self.assertEqual(self.patient_2.balance, 0)
+
+
+    def test_availabletime_view_delete_reserve_time_1(self):
+        self.client.login(username="Reza", password="12345")
+        response = self.client.post(reverse('patient_delete_reserve_time', args=[self.time_patient1_2.id, 1]))
+
+        self.time_patient1_2.refresh_from_db()
+        self.patient_1.refresh_from_db()
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('patient_reserved_times')) 
+        self.assertIsNone(self.time_patient1_2.patient)
+        self.assertEqual(self.patient_1.balance, 350000)
+
+
+    def test_availabletime_view_delete_reserve_time_2(self):
+        self.client.login(username="Reza", password="12345")
+        response = self.client.post(reverse('patient_delete_reserve_time', args=[self.time_patient1_2.id, 2]))
+
+        self.time_patient1_2.refresh_from_db()
+        self.patient_1.refresh_from_db()
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('availabletime_doctor', args=[self.time_patient1_2.doctor.id]))
+        self.assertIsNone(self.time_patient1_2.patient)
+        self.assertEqual(self.patient_1.balance, 350000)
+
+
     def test_availabletime_view_patient(self):
         self.client.login(username="Reza", password="12345")
 
