@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load patient_tags %}
+
+{% load static %}
+{% block title %}تایم های دکتر{% endblock %}
+{% block content %}
+    {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/availabletime_doctor.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pagination.css' %}">
+    {% endblock %}
+
+
+    <div class="container">
+        <h1>زمان‌های موجود دکتر 
+            <a href="{% url 'detail_doctor' doctor.id %}">
+                {{ doctor.first_name }} {{ doctor.last_name }}
+            </a>
+        </h1>
+        <div class="message-container">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}" id="message-{{ forloop.counter }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% if is_admin %}
+        <a href="{% url "create_availabletime" doctor.pk %}" class="button">اضافه کردن زمان جدید</a>
+        {% endif %}
+
+        {% if availabletimes %}
+            {% if not is_admin and not doctor.is_active %}
+                <p>زمانی برای نمایش وجود ندارد.</p>
+            {% else %}
+            {% for time in availabletimes %}
+                <div class="available-time">
+                    <div class="day">{% date_format time.date %}</div>
+                    <div class="time">{% time_format time.end_time %} - {% time_format time.start_time %}</div>
+
+                    <div class="patient-name">
+                        {% if time.patient.user %}
+                            {{ time.patient.user.first_name }} {{ time.patient.user.last_name }}
+                        {% else %}
+                            بدون بیمار
+                        {% endif %}
+                    </div>
+                    <div class="actions">
+                        {% if is_admin %}
+                            <a href="{% url "edit_availabletime" time.id %}" class="button">ویرایش</a>
+                            <a href="{% url "delete_availabletime" time.id %}" class="button-exit">حذف</a>
+                        {% else %}
+                            {% if time.patient is None %}
+                                <a href="{% url "patient_reservation" time.id %}" class="button">رزرو</a>
+                            {% else %}
+                                <a href="{% url "patient_delete_reserve_time" time.id 2 %}" class="button-exit">حذف</a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+            {% endif %}
+        {% else %}
+            <p>زمانی برای نمایش وجود ندارد.</p>
+        {% endif %}
+
+
+
+
+        <br>
+        <div class="pagination">
+            {% if availabletimes.has_previous %}
+                <a href="?page={{availabletimes.previous_page_number}}" class="prev" aria-label="Previous">❮</a>
+            {% endif %}
+
+            {% for i in availabletimes.paginator.page_range %}
+                {% if page_i == i %}
+                    <a class="active" href="?page={{i}}">{{i}}</a>
+                {% else %}
+                    <a class="" href="?page={{i}}">{{i}}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if availabletimes.has_next %}
+                <a href="?page={{availabletimes.next_page_number}}" class="next" aria-label="Next">❯</a>
+            {% endif %}
+        </div>
+        
+    </div>
+    
+    
+<script>
+    // انتخاب پیام‌ها
+    document.querySelectorAll('.messages li').forEach(function(message) {
+        // ناپدید شدن پیام‌ها بعد از ۳ ثانیه
+        setTimeout(function() {
+            message.style.opacity = '0'; // به تدریج ناپدید می‌شود
+            setTimeout(function() {
+                message.remove(); // حذف کامل پیام از DOM
+            }, 1000); // زمان تطابق با transition
+        }, 5000); // 3 ثانیه برای نمایش
+    });
+</script>
+{% endblock %}

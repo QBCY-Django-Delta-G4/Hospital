@@ -1,85 +1,113 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load patient_tags %}
+
+{% block title %}اطلاعات دکتر{% endblock %}
 {% block content %}
 <body>
     {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/detail_doctor.css' %}">
-        <style>
-.rating-section {
-    display: flex; /* استفاده از Flexbox برای چیدمان */
-    align-items: center; /* تراز کردن عمودی محتوا */
-    justify-content: flex-start; /* قرار دادن محتوا به سمت چپ */
-    margin-top: 10px; /* فاصله بالای بخش امتیازدهی */
-    padding: 10px; /* فضای داخلی اطراف بخش امتیازدهی */
-    border: 1px solid #ddd; /* حاشیه برای بهتر دیدن محدوده */
-    border-radius: 5px; /* گوشه‌های گرد برای زیبایی */
-}
-
-.rating-form {
-    margin-right: 20px; /* فاصله از سمت راست */
-}
-
-.rating-button {
-    margin-top: 10px; /* فاصله بالای دکمه ارسال */
-}
-        </style>
     {% endblock %}
+    <div class="message-container">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}" id="message-{{ forloop.counter }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+
     <div class="doctor-profile">
-        <!-- اطلاعات دکتر -->
         <div class="header">
-            <h1 class="doctor-name">{{ doctors.first_name }} {{ doctors.last_name }}</h1>
-            <p class="specialization"><strong>تخصص:</strong> {{ doctors.specializations }}</p>
+            <h1 class="doctor-name">{{ doctor.first_name }} {{ doctor.last_name }}</h1>
+            <img alt="{{ doctor.first_name }}" src="{{ doctor.image.url }}" width="250" height="300">
+            <br>
+
+            <div class="star-rating">
+                <p>امتیاز دکتر: 
+                    {% for i in "54321" %}
+                    <span class="{% if average_score and average_score|floatformat:0 >= i %}filled{% endif %}">★</span>
+                    {% endfor %}
+                    <span>({{average_score}})</span>
+                </p>
+            </div>
+
+            <p class="specialization"><strong>تخصص:</strong> {{ doctor.specializations }}</p>
         </div>
 
         <div class="contact-info">
-            <p><strong>شماره تماس:</strong> {{ doctors.phone }}</p>
-            <p><strong>آدرس مطب:</strong> {{ doctors.clinic_address }}</p>
-            <p><strong>شماره نظام پزشکی:</strong> {{ doctors.license_number }}</p>
+            <p><strong>شماره تماس:</strong> {{ doctor.phone }}</p>
+            <p><strong>آدرس مطب:</strong> {{ doctor.clinic_address }}</p>
+            <p><strong>شماره نظام پزشکی:</strong> {{ doctor.license_number }} </p>
         </div>
 
         <div class="about-doctor">
             <h2>درباره دکتر</h2>
-            <p>{{ doctors.biography }}</p>
+            <p>{{ doctor.biography }}</p>
         </div>
 
         <div class="doctor-status">
-            {% if doctors.is_active %}
-                <p class="status active">دکتر در حال حاضر در مطب هستند</p>
+            {% if doctor.is_active %}
+                <p class="status active">دکتر درحال حاضر پذیرش دارد</p>
             {% else %}
-                <p class="status not-active">دکتر در حال حاضر در مطب نیستند</p>
+                <p class="status not-active">دکتر درحال حاضر پذیرش ندارد</p>
             {% endif %}
         </div>
 
-        <div class="visit-cost">
-            <p><strong>هزینه ویزیت:</strong> {{ doctors.visit_cost }} ریال</p>
-            <a href="{% url 'createdoctor' %}">نوبت دهی</a>
+       <div class="visit-cost">
+            <p><strong>هزینه ویزیت:</strong> {{ doctor.visit_cost }} ریال</p>
+            <a href="{% url 'availabletime_doctor' doctor.id %}">نوبت دهی</a>
         </div>
 
+
         <div class="comments-section">
+            {% if not request.user.is_staff %}
+                <div class="rating-section">
+                    {% if score %}
+                        <div class="star-rating">
+                        <p>امتیاز شما به این دکتر: 
+                            {% for i in "54321" %}
+                                <span class="{% if score|floatformat:0 >= i %}filled{% endif %}">★</span>
+                            {% endfor %}
+                            <span>({{score}})</span>
+                        </p>
+                        </div>
+                    {% elif is_visited %}
+                        <form method="post" class="rating-form" >
+                            {% csrf_token %}
+                            <div class="star-rating">
+                            {% for i in "54321" %}
+                                <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}"/>
+                                <label for="star{{ i }}">★</label>
+                            {% endfor %}
+                            </div>
+    
+                            <input name="btn-submit" type="submit" class="rating-button" value="ثبت امتیاز">
+                        </form>
+                    {% else %}
+                        <h4>شما هنوز توسط این دکتر ویزیت نشده اید و نمی توانید امتیاز بدهید.</h4>
+                    {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
             {% with page_obj.paginator.count as total_comments %}
                 <h2>تعداد نظرات: {{ total_comments }}</h2>
             {% endwith %}
+
             {% for comment in page_obj %}
+            <hr>
                 <div class="comment">
                     <p class="comment-author">نظر توسط {{ comment.patient.user.username }}</p>
+                    <p class="comment-score">امتیاز بیمار به دکتر {% get_patient_score comment.patient  doctor.id %}</p>
                     <div class="comment-text">
                         {{ comment.description|linebreaks }}
                         <br>
                         {% if request.user.is_authenticated %}
                             {% if request.user.is_staff or comment.patient.user == request.user %}
-                                <a href="{% url 'delete_comment' doctor_id=doctors.id comment_id=comment.id %}">حذف</a>
+                                <a class="button-exit" href="{% url 'delete_comment' doctor_id=doctor.id comment_id=comment.id %}">حذف</a>
                             {% endif %}
-                        {% endif %}
-                    </div>
-                    <div class="rating-section">
-                        {% if comment.rating %}
-                            <p>امتیاز: {{ comment.rating }}</p>
-                        {% else %}
-                            <form method="post" class="rating-form">
-                                {% csrf_token %}
-                                {{ rating_form.as_p }}
-                                <input type="submit" value="ثبت امتیاز" class="rating-button">
-                            </form>
                         {% endif %}
                     </div>
                     <p class="comment-date">در تاریخ {{ comment.created_at }}</p>
@@ -88,18 +116,23 @@
                 <p>هیچ نظری ثبت نشده است</p>
             {% endfor %}
 
-            {% if new_comment %}
-                <h2>نظر شما با موفقیت ثبت شد</h2>
-            {% else %}
+
+            <hr>
+            {% if is_visited or request.user.is_staff %}
                 <h2>نظر خود را بنویسید</h2>
                 <div class="new-comment-form">
                     <form method="post">
-                        {{ comment_form.as_p }}
                         {% csrf_token %}
-                        <input type="submit" value="ثبت نظر">
+                        {{ comment_form.as_p }}
+                        <input name="btn-submit" type="submit" value="ثبت نظر">
                     </form>
                 </div>
+            {% else %}
+                <h4>شما هنوز توسط این دکتر ویزیت نشده اید و نمی توانید نظر جدیدی ثبت کنید.</h4>
             {% endif %}
+
+
+
 
             <div class="pagination">
                 <span class="step-links">
@@ -119,6 +152,16 @@
                 </span>
             </div>
         </div>
-    </div>
 </body>
+
+<script>
+    document.querySelectorAll('.messages li').forEach(function(message) {
+        setTimeout(function() {
+            message.style.opacity = '0';
+            setTimeout(function() {
+                message.remove();
+            }, 1000);
+        }, 3000);
+    });
+</script>
 {% endblock %}

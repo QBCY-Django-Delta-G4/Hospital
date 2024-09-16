@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block title %}ایجاد دکتر{% endblock %}
 {% block content %}
     {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/create_doctor.css' %}">
@@ -18,7 +19,7 @@
         </div>
 
         <div class="form-container">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ forms.as_p }}
                 <button type="submit" class="submit-btn">ساخت دکتر</button>
@@ -26,5 +27,15 @@
         </div>
     </div>
 
-<script src="{% static 'js/message.js' %}"></script>
+    <script>
+        // ناپدید شدن پیام‌ها بعد از ۳ ثانیه
+        document.querySelectorAll('.messages li').forEach(function(message) {
+            setTimeout(function() {
+                message.style.opacity = '0'; // به تدریج ناپدید می‌شود
+                setTimeout(function() {
+                    message.remove(); // حذف کامل پیام از DOM
+                }, 1000); // زمان تطابق با transition
+            }, 3000); // 3 ثانیه برای نمایش
+        });
+    </script>
 {% endblock %}

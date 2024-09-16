@@ -7,12 +7,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>ورود</title>
 
 </head>
 <body>
 
     <div class="login-container">
+        <div class="message-container">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}" id="message-{{ forloop.counter }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
         <h2>Login</h2>
         <form method="POST">
             {% csrf_token %}
@@ -33,5 +42,17 @@
 
 </body>
 </html>
+<script>
+    // انتخاب پیام‌ها
+    document.querySelectorAll('.messages li').forEach(function(message) {
+        // ناپدید شدن پیام‌ها بعد از ۳ ثانیه
+        setTimeout(function() {
+            message.style.opacity = '0'; // به تدریج ناپدید می‌شود
+            setTimeout(function() {
+                message.remove(); // حذف کامل پیام از DOM
+            }, 1000); // زمان تطابق با transition
+        }, 3000); // 3 ثانیه برای نمایش
+    });
+</script>
 {% endblock %}
 

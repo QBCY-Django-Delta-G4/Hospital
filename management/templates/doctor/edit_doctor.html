@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block title %}ویرایش دکتر{% endblock %}
 {% block content %}
     {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/edit_doctor.css' %}">
@@ -18,7 +19,7 @@
         </div>
 
         <div class="form-container">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ forms.as_p }}
                 <button type="submit" class="submit-btn">ویرایش دکتر</button>

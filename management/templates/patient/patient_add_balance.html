@@ -1,40 +1,43 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block title %}افزایش موجودی{% endblock %}
 {% block content %}
+
     {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/edit_doctor.css' %}">
     {% endblock %}
+
     <div class="container">
-        <h1 class="page-title">افزایش موجودی</h1>
+    <h1 class="page-title">افزایش موجودی</h1>
 
-        <div class="message-container">
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li class="{{ message.tags }}" id="message-{{ forloop.counter }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        </div>
-
-        <div class="form-container">
-            <form method="post">
-                {% csrf_token %}
-                {{ forms.as_p }}
-                <button type="submit" class="submit-btn">افزایش</button>
-            </form>
-        </div>
+    <div class="message-container">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}" id="message-{{ forloop.counter }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
     </div>
 
-    <script>
-        // ناپدید شدن پیام‌ها بعد از ۳ ثانیه
-        document.querySelectorAll('.messages li').forEach(function(message) {
+    <div class="form-container">
+        <form method="post">
+            {% csrf_token %}
+            {{ forms.as_p }}
+            <button type="submit" class="submit-btn">افزایش</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // ناپدید شدن پیام‌ها بعد از ۳ ثانیه
+    document.querySelectorAll('.messages li').forEach(function(message) {
+        setTimeout(function() {
+            message.style.opacity = '0'; // به تدریج ناپدید می‌شود
             setTimeout(function() {
-                message.style.opacity = '0'; // به تدریج ناپدید می‌شود
-                setTimeout(function() {
-                    message.remove(); // حذف کامل پیام از DOM
-                }, 1000); // زمان تطابق با transition
-            }, 3000); // 3 ثانیه برای نمایش
-        });
-    </script>
+                message.remove(); // حذف کامل پیام از DOM
+            }, 1000); // زمان تطابق با transition
+        }, 3000); // 3 ثانیه برای نمایش
+    });
+</script>
 {% endblock %}

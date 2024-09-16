@@ -57,7 +57,6 @@
 .visit-cost a:hover {
     background-color: #2980b9; /* تغییر رنگ هنگام هاور */
 }
-    /* استایل برای بخش نظرات */
 .comments-section {
     margin-top: 30px;
     padding: 20px;
@@ -87,8 +86,15 @@
 }
 
 .comment .comment-author {
+    font-size: 16px;
     font-weight: bold;
     color: #007bff;
+}
+
+.comment .comment-score {
+    padding-top: 3px;
+    font-size: 12px;
+    color: #1f78d7;
 }
 
 .comment .comment-date {
@@ -155,4 +161,85 @@
 
 .rating-button:hover {
     background-color: #e07b6d; /* Slightly darker salmon color on hover */
+}
+
+
+
+
+
+/* استایل پیام‌ها */
+.message-container {
+    margin-bottom: 20px;
+}
+
+.messages {
+    list-style: none;
+    padding: 0;
+}
+
+.messages li {
+    padding: 15px;
+    margin-bottom: 15px; /* فاصله بیشتر بین پیام‌ها */
+    border-radius: 5px;
+    font-size: 16px; /* افزایش اندازه فونت برای خوانایی بهتر */
+    transition: opacity 1s ease;
+    display: flex;
+    align-items: center; /* تراز عمودی */
+}
+
+.messages li.success {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.messages li.error {
+    background-color: #e74c3c;
+    color: white;
+}
+
+
+
+.button-exit {
+    background-color: crimson;
+    color: white;
+    border: none;
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.button-exit:hover {
+    background-color: darkred;
+}
+
+
+
+.star-rating {
+    direction: rtl;
+    display: inline-block;
+}
+.star-rating span {
+    font-size: 30px;
+    color: lightgray;
+}
+.star-rating span.filled {
+    color: gold;
+}
+
+.star-rating input {
+    display: none;
+}
+.star-rating label {
+    font-size: 30px;
+    color: lightgray;
+    cursor: pointer;
+}
+.star-rating input:checked ~ label {
+    color: gold;
+}
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: gold;
 }

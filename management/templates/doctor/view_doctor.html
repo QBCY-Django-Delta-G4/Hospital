@@ -1,10 +1,20 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block title %}لیست دکترها{% endblock %}
 {% block content %}
     {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/view_doctor.css' %}">
     {% endblock %}
     <div class="container">
+        <div class="message-container">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}" id="message-{{ forloop.counter }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
         <h1>لیست پزشکان</h1>
         <table>
             <thead>
@@ -12,6 +22,8 @@
                     <th>نام</th>
                     <th>نام خانوادگی</th>
                     <th>تخصص</th>
+                    <th>ویزیت</th>
+                    <th>وضعیت</th>
                     <th></th>
                 </tr>
             </thead>
@@ -21,9 +33,17 @@
                         <td><a href="{% url 'detail_doctor' doctor.pk %}">{{ doctor.first_name }}</a></td>
                         <td>{{ doctor.last_name }}</td>
                         <td>{{ doctor.specializations.title }}</td>
+                        <td>{{ doctor.visit_cost }}</td>
                         <td>
-                            <a href="{% url 'edit_doctor' doctor.pk %}">Edit</a>
-                            <a href="{% url 'delete_doctor' doctor.pk %}">Delete</a>
+                            {% if doctor.is_active %}
+                                <p>فعال</p>
+                            {% else %}
+                                <p>غیرفعال</p>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'edit_doctor' doctor.pk %}" class="button" style="font-size: 13px;">ویرایش</a>
+                            <a href="{% url 'delete_doctor' doctor.pk %}" class="button-exit">حذف</a>
                         </td>
                     </tr>
                 {% empty %}
@@ -34,4 +54,16 @@
             </tbody>
         </table>
     </div>
+    <script>
+        // انتخاب پیام‌ها
+        document.querySelectorAll('.messages li').forEach(function(message) {
+            // ناپدید شدن پیام‌ها بعد از ۳ ثانیه
+            setTimeout(function() {
+                message.style.opacity = '0'; // به تدریج ناپدید می‌شود
+                setTimeout(function() {
+                    message.remove(); // حذف کامل پیام از DOM
+                }, 1000); // زمان تطابق با transition
+            }, 3000); // 3 ثانیه برای نمایش
+        });
+    </script>
 {% endblock %}

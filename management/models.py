@@ -14,17 +14,22 @@ class Specialization(models.Model):
 class Doctor(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
+    image = models.ImageField(null=True, blank=True, upload_to='%Y-%m-%d', default='empty.jpg', verbose_name='بارگذاری تصویر')
     specializations = models.ForeignKey(Specialization, on_delete=models.PROTECT, verbose_name='تخصص')
     phone = models.CharField(max_length=15)
     clinic_address = models.TextField(verbose_name='آدرس مطب')
-    license_number = models.CharField(max_length=11)
+    license_number = models.IntegerField(verbose_name='کد نظام پزشکی', unique=True)
     biography = models.TextField(verbose_name='درباره دکتر')
     is_active = models.BooleanField(default=True)
     visit_cost = models.DecimalField(decimal_places=2, max_digits=8)
     is_deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
     def __str__(self) -> str:
-        return self.first_name
+        return f"{self.first_name} {self.last_name}"
+
+    @property
+    def formatted_visit_cost(self):
+        return "{:,.0f} ریال".format(self.visit_cost)
 
 
 class AvailableTime(models.Model):
@@ -34,11 +39,8 @@ class AvailableTime(models.Model):
     end_time = models.TimeField()
     patient = models.ForeignKey("Patient", on_delete=models.PROTECT, null=True, blank=True)
 
-    class Meta:
-        permissions = [
-            ("admin_available_time", "Can add-edit-remove available time"),
-            ("patient_available_time", "Can view available time"),
-        ]
+    def __str__(self) -> str:
+        return f"{self.doctor.first_name} {self.doctor.last_name}"
 
 
 class Comment(models.Model):
@@ -52,27 +54,28 @@ class Comment(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.description}"
+        return f"{self.patient.user.username} to {self.doctor.first_name}"
+
+
+
+def get_average_rating(doctor_id):
+    average_rating = Rating.objects.filter(doctor_id=doctor_id).aggregate(models.Avg('score'))
+    return average_rating['score__avg']
 
 
 class Rating(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
     patient = models.ForeignKey("Patient", on_delete=models.CASCADE, blank=True, null=True)
-    comment = models.OneToOneField(Comment, on_delete=models.CASCADE, null=True)
     score = models.PositiveIntegerField(
         validators=[
             MinValueValidator(1),
             MaxValueValidator(5)
         ]
+        ,default=0
     )
-    def __str__(self):
-        return f"{self.score}"
 
-    def save(self, *args, **kwargs):
-        # اطمینان حاصل کنید که کامنت به دکتر مربوط به بیمار است
-        if self.comment.patient != self.patient:
-            raise ValueError("Comment must belong to the patient providing the rating.")
-        super().save(*args, **kwargs)
+    def __str__(self):
+        return f"{self.doctor.first_name} - {self.score}"
 
 
 class Patient(models.Model):

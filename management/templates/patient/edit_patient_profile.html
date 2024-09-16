@@ -1,14 +1,13 @@
-
-
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}فراموشی رمز عبور{% endblock %}
+{% block title %}ویرایش بیمار{% endblock %}
 {% block content %}
+
     {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/create_doctor.css' %}">
+    <link rel="stylesheet" href="{% static 'css/edit_doctor.css' %}">
     {% endblock %}
     <div class="container">
-        <h1 class="page-title">فراموشی پسورد</h1>
+        <h1 class="page-title">ویرایش بیمار</h1>
 
         <div class="message-container">
             {% if messages %}
@@ -19,18 +18,19 @@
             </ul>
             {% endif %}
         </div>
-        
+
         <div class="form-container">
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="submit-btn">ارسال کد</button>
+                {{user_form.as_p}}
+                {{patient_form.as_p}}
+                <br>
+                <button type="submit" class="submit-btn">ویرایش بیمار</button>
             </form>
         </div>
     </div>
 
     <script>
-        // ناپدید شدن پیام‌ها بعد از ۳ ثانیه
         document.querySelectorAll('.messages li').forEach(function(message) {
             setTimeout(function() {
                 message.style.opacity = '0'; // به تدریج ناپدید می‌شود
