@@ -21,7 +21,7 @@ class Doctor(models.Model):
     license_number = models.IntegerField(verbose_name='کد نظام پزشکی', unique=True)
     biography = models.TextField(verbose_name='درباره دکتر')
     is_active = models.BooleanField(default=True)
-    visit_cost = models.DecimalField(decimal_places=2, max_digits=8)
+    visit_cost = models.DecimalField(decimal_places=2, max_digits=8, default=0)
     is_deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
     def __str__(self) -> str:
@@ -54,8 +54,9 @@ class Comment(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.patient.user.username} to {self.doctor.first_name}"
-
+        if self.patient and self.patient.user:
+            return f"{self.patient.user.username} to {self.doctor.first_name}"
+        return f"unAuthorized to {self.doctor.first_name}"
 
 
 def get_average_rating(doctor_id):
