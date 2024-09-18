@@ -1,41 +1,30 @@
-version: '3.8'
+version: '3.9'
+
 services:
   database:
-
-    image: mysql:5.7
-    container_name: project_name_mariadb
+    image: docker.arvancloud.ir/postgres:latest
     restart: always
     volumes:
-      - data:/var/lib/mysql
+      - hospital_db:/var/lib/postgresql/data
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    ports:
-      - "3306:3306"
-    
-  restart: always
-  
+      POSTGRES_PASSWORD: "pgpassword"
+      POSTGRES_USER: "pgadmin"
+      POSTGRES_DB: "hospital"
 
   app:
-    build: 
-      context: .
-    image: app
-    container_name: django-app
+    build: .
     command: >
       sh -c "python manage.py migrate &&
              python manage.py collectstatic --no-input --clear &&
-             gunicorn hospital.wsgi:application --bind 0.0.0.0:8000"
+             gunicorn -w 4 -b 0.0.0.0:8000 hospital.wsgi:application"
     volumes:
-      - static:/usr/src/app/static
-      - media:/usr/src/app/media
+      - .:/usr/src/app/
     depends_on:
       - database
-
-
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
 
 volumes:
-  static:
-  media:
-  mysql:
+  hospital_db:
