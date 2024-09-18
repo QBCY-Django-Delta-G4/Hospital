@@ -155,13 +155,13 @@
 </body>
 
 <script>
-    document.querySelectorAll('.messages li').forEach(function(message) {
+document.querySelectorAll('.messages li').forEach(function(message) {
+    setTimeout(function() {
+        message.style.opacity = '0';
         setTimeout(function() {
-            message.style.opacity = '0';
-            setTimeout(function() {
-                message.remove();
-            }, 1000);
-        }, 3000);
-    });
+            message.remove();
+        }, 1000);
+    }, 3000);
+});
 </script>
 {% endblock %}

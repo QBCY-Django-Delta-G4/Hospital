@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  database:
+    image: docker.arvancloud.ir/postgres:latest
+    restart: always
+    volumes:
+      - hospital_db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: "pgpassword"
+      POSTGRES_USER: "pgadmin"
+      POSTGRES_DB: "hospital"
+
+  app:
+    build: .
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --no-input --clear &&
+             gunicorn -w 4 -b 0.0.0.0:8000 hospital.wsgi:application"
+    volumes:
+      - .:/usr/src/app/
+    depends_on:
+      - database
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+
+volumes:
+  hospital_db:

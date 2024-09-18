@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator
+from django.db import IntegrityError
 
 
 @login_required(login_url='login')
@@ -94,7 +95,10 @@ def detail_doctor(request: HttpRequest, id):
     if request.user.is_staff:
         patient = None
     else:
-        patient = Patient.objects.get(user=request.user)
+        try:
+            patient = Patient.objects.get(user=request.user)
+        except Patient.DoesNotExist:
+            patient = None
         reserved_tiems = AvailableTime.objects.filter(doctor=doctor, patient=patient)
         if reserved_tiems:
             is_visited = True
@@ -110,10 +114,12 @@ def detail_doctor(request: HttpRequest, id):
             rate = request.POST.get('rating')
             if rate is not None:
                 try:
-                    Rating.objects.create(score=rate, doctor=doctor, patient=patient)
+                    Rating.objects.create(score=int(rate), doctor=doctor, patient=patient)
                     messages.success(request, 'امتیاز شما با موفقیت ثبت شد.')
-                except:
-                    messages.error(request, 'امتیاز ثبت نشد.')
+                except IntegrityError:
+                    messages.error(request, 'خطا در ثبت امتیاز. لطفا دوباره امتحان کنید.')
+                except Exception as e:
+                    messages.error(request, f'خطای ناشناخته{e}')
 
         elif btn_submit == "ثبت نظر":
             comment_form = CommentForm(data=request.POST)
@@ -158,7 +164,7 @@ def detail_doctor(request: HttpRequest, id):
 
 @login_required(login_url='login')
 def delete_comment(request:HttpRequest, doctor_id, comment_id):
-    comment = get_object_or_404(Comment, id=comment_id)
+    comment = get_object_or_404(Comment, id=comment_id, doctor_id=doctor_id)
 
     if request.user.is_staff or (comment.patient.user == request.user):
         comment.is_deleted = True

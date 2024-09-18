@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'management'
+    'django_extensions',
+    'management',
 ]
 
 MIDDLEWARE = [
@@ -78,7 +79,25 @@ WSGI_APPLICATION = 'hospital.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+# DATABASES = {
+#     # 'default': {
+#     #     'ENGINE': 'django.db.backends.postgresql',
+#     #     'NAME': 'hospital',
+#     #     'USER': 'root',
+#     #     'PASSWORD': 'Al!kh0d@13711',
+#     #     'HOST': 'localhost',
+#     #     'PORT': '5433',
+#     # }
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DATABASE_NAME'),
+#         'USER': config('DATABASE_USER'),
+#         'PASSWORD': config('DATABASE_PASSWORD'),
+#         'HOST': config('DATABASE_HOST'),
+#         'PORT': config('DATABASE_PORT', default='5432'),
+#     }
+#
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
