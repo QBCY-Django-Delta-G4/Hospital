@@ -1,4 +1,4 @@
-#!/home/hesam/hesam_projects/main/virtual_env/bin/python3
+#!/home/hesam/hesam_projects/main/virtual_env/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
