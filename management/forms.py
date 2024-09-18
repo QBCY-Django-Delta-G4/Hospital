@@ -15,7 +15,6 @@ def check_name(name):
 
 def check_phone(phone):
     phone_regex = r'^09[0-9]{9}$'
-    print(phone)
     if not re.match(phone_regex, phone):
         return False
     return True

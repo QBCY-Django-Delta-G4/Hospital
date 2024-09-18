@@ -1,0 +1,245 @@
+/* تنظیمات اصلی بدون تغییر در base.html */
+.doctor-profile {
+    width: 100%;
+    max-width: 800px;
+    min-height: 70vh; /* حداقل ارتفاع به 70 درصد صفحه تنظیم شده */
+    margin: 50px auto; /* فاصله از بالای صفحه */
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.header, .contact-info, .about-doctor {
+    margin-bottom: 20px;
+}
+
+.status {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.status.active {
+    display: inline-block;
+    background-color: #2ecc71;
+    color: white;
+}
+
+.status.not-active {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: white;
+}
+
+.visit-cost {
+    display: flex; /* برای قرار گرفتن المان‌ها در یک خط */
+    align-items: center; /* ترازبندی عمودی المان‌ها در یک خط */
+    gap: 10px; /* فاصله بین متن و دکمه */
+}
+
+.visit-cost p {
+    margin: 0; /* حذف حاشیه پیش‌فرض پاراگراف برای تراز بهتر */
+}
+
+.visit-cost a {
+    padding: 8px 16px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none; /* حذف خط زیر لینک */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block; /* نمایش به شکل دکمه */
+    transition: background-color 0.3s ease; /* افکت تغییر رنگ هنگام هاور */
+}
+
+.visit-cost a:hover {
+    background-color: #2980b9; /* تغییر رنگ هنگام هاور */
+}
+.comments-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.comments-section h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.comment {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.comment p {
+    margin: 0;
+    color: #555;
+}
+
+.comment .comment-author {
+    font-size: 16px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.comment .comment-score {
+    padding-top: 3px;
+    font-size: 12px;
+    color: #1f78d7;
+}
+
+.comment .comment-date {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 5px;
+}
+
+.comment .comment-text {
+    margin-top: 10px;
+}
+
+.new-comment-form {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.new-comment-form input[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.new-comment-form input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Ensure the .comment container is positioned correctly */
+.comment {
+    position: relative;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+/* Position the rating form container */
+.rating-form-container {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: #f1f1f1;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+/* Style the submit button */
+.rating-button {
+    background-color: #fa8072; /* Salmon color */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 45px;
+}
+
+.rating-button:hover {
+    background-color: #e07b6d; /* Slightly darker salmon color on hover */
+}
+
+
+
+
+
+/* استایل پیام‌ها */
+.message-container {
+    margin-bottom: 20px;
+}
+
+.messages {
+    list-style: none;
+    padding: 0;
+}
+
+.messages li {
+    padding: 15px;
+    margin-bottom: 15px; /* فاصله بیشتر بین پیام‌ها */
+    border-radius: 5px;
+    font-size: 16px; /* افزایش اندازه فونت برای خوانایی بهتر */
+    transition: opacity 1s ease;
+    display: flex;
+    align-items: center; /* تراز عمودی */
+}
+
+.messages li.success {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.messages li.error {
+    background-color: #e74c3c;
+    color: white;
+}
+
+
+
+.button-exit {
+    background-color: crimson;
+    color: white;
+    border: none;
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.button-exit:hover {
+    background-color: darkred;
+}
+
+
+
+.star-rating {
+    direction: rtl;
+    display: inline-block;
+}
+.star-rating span {
+    font-size: 30px;
+    color: lightgray;
+}
+.star-rating span.filled {
+    color: gold;
+}
+
+.star-rating input {
+    display: none;
+}
+.star-rating label {
+    font-size: 30px;
+    color: lightgray;
+    cursor: pointer;
+}
+.star-rating input:checked ~ label {
+    color: gold;
+}
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: gold;
+}
