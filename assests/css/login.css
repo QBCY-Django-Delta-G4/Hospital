@@ -1,0 +1,91 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.login-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 300px;
+}
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+form {
+    display: flex;
+    flex-direction: column;
+}
+label {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+input {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+}
+button:hover {
+    background-color: #0056b3;
+}
+.links {
+    text-align: center;
+    margin-top: 10px;
+}
+.links a {
+    color: #007bff;
+    text-decoration: none;
+}
+.links a:hover {
+    text-decoration: underline;
+}
+
+
+
+
+/* استایل پیام‌ها */
+.message-container {
+    margin-bottom: 20px;
+}
+
+.messages {
+    list-style: none;
+    padding: 0;
+}
+
+.messages li {
+    padding: 15px;
+    margin-bottom: 15px; /* فاصله بیشتر بین پیام‌ها */
+    border-radius: 5px;
+    font-size: 16px; /* افزایش اندازه فونت برای خوانایی بهتر */
+    transition: opacity 1s ease;
+    display: flex;
+    align-items: center; /* تراز عمودی */
+}
+
+.messages li.success {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.messages li.error {
+    background-color: #e74c3c;
+    color: white;
+}

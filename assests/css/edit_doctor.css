@@ -1,0 +1,93 @@
+/* تنظیمات اصلی فرم */
+.container {
+    width: 100%;
+    max-width: 600px;
+    margin: 50px auto; /* مرکزیت فرم */
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* استایل عنوان صفحه */
+.page-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #333;
+    font-weight: bold;
+}
+
+/* استایل پیام‌ها */
+.message-container {
+    margin-bottom: 20px;
+}
+
+.messages {
+    list-style: none;
+    padding: 0;
+}
+
+.messages li {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: opacity 1s ease;
+    display: flex;
+    align-items: center;
+}
+
+.messages li.success {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.messages li.error {
+    background-color: #e74c3c;
+    color: white;
+}
+
+/* استایل فرم */
+.form-container {
+    margin-bottom: 20px;
+}
+
+.form-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container form p {
+    margin-bottom: 15px;
+}
+
+.form-container input, .form-container select, .form-container textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.form-select {
+    width: 100%; /* عرض کامل برای فیلد انتخاب */
+}
+
+.submit-btn {
+    padding: 12px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #2980b9;
+}
+
+

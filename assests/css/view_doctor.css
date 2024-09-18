@@ -1,0 +1,76 @@
+table {
+    width: 80%;
+    margin-bottom: 40px;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+th, td {
+    font-size: 15px;
+    padding: 15px;
+    text-align: center;
+    border: none;
+}
+th {
+    background-color: #4CAF50;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+tr:hover {
+    background-color: #d1e7dd;
+}
+caption {
+    margin: 10px;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+}
+
+
+.container {
+    width: 90%;
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+
+.button {
+    background-color: #007BFF;
+    /* font-size: 13px; */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.button:hover {
+    background-color: #0056b3;
+}
+
+
+
+.button-exit {
+    background-color: crimson;
+    font-size: 13px;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.button-exit:hover {
+    background-color: darkred;
+}
+
+
